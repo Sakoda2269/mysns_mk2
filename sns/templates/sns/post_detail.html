@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>{{ post.title }}</h1>
+    -
+    <a href='{% url "accounts:user" post.author.id %}'>
+        {{ post.author }}
+    </a>
+    <div>
+        {{ post.created_at }}<br><br>
+        {{ post.detail }}
+    </div>
+    <br>
+    <br>
+    {% if request.user.id == object.author_id %}
+        <div>
+            <a href='{% url "sns:update" post.pk %}'>編集</a>|
+            <a href='{% url "sns:delete" post.pk %}'>削除</a>
+        </div>
+    {% endif %}
+    
+{% endblock %}

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name='viewport' content='width=device-width, initial-scale=1, shrink-to-fit=no'>
+        <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css' >
+        <title>SNS</title>
+        <style>body {padding-top : 80px}</style>
+    </head>
+    <body>
+
+        <nav class='navbar navbar-expand-sm navbar-dark bg-dark fixed-top'>
+            <a class='navbar-brand' href='{% url "sns:index" %}'>SNS</a>
+            <ul class="navbar-nav">
+                {% if user.is_authenticated %}
+                    <li class="navbar-item">
+                        <a href='{% url "accounts:user" user.id %}'>
+                            <span class="navbar-text">{{ user }} -</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href='{% url "logout" %}' class="logout nav-link">
+                            Logout
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a href='{% url "login" %}' class="login nav-link">
+                            Login
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href='{% url "accounts:signup" %}' class="signup nav-link">Sign up</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+
+        
+        <div class='container'>
+            {% block content %}
+            {% endblock %}
+        </div>
+    </body>
+</html>

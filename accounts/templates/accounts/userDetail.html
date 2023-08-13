@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block content %}
+    <h1>
+        {{ userDetail.username }} 
+    </h1>
+    <p>
+        @{{ userDetail.usertag }}
+    </p>
+    {% if following %}
+        <a href='{% url "accounts:unfollow" userDetail.id %}'>
+            フォロー解除
+            <br>
+            <br>    
+        </a>
+    {% elif userDetail.id != user.id %}
+        <a href='{% url "accounts:follow" userDetail.id %}'>フォロー</a>
+        <br>
+        <br>
+    {% endif %}
+    
+    <p>
+        {{ userDetail.created_at }}に登録
+    </p>
+    {% for post in posts reversed %}
+        <a href='{% url "sns:post" post.id %}'>
+            {{ post.title }}
+        </a> -
+        {{ post.created_at }}
+        <br>
+    {% endfor %}
+{% endblock %}

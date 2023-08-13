@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    p {
+        margin-left:1rem;
+    }
+</style>
+<h1>タイムライン</h1><br><br>
+<div>
+    {% for post in object_list reversed %}
+        <a href='{% url "accounts:user" post.author.pk%}'>
+            {{ post.author }}
+        </a>-
+        <a href='{% url "sns:post" post.pk %}'>
+            {{ post.title }} 
+        </a>-
+            {{ post.created_at }}
+        <br>
+        <p>
+            {{ post.detail }}
+        </p>
+        <br>
+    {% endfor %}
+</div>
+<br>
+<br>
+<br>
+{% if user.is_authenticated %}
+    <div>
+        <a href='{% url "sns:create" %}'>投稿する</a>
+    </div>
+{% endif %}
+{% endblock %}
