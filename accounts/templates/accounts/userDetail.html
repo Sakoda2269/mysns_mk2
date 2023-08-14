@@ -11,7 +11,7 @@
             <br>
             <br>    
         {% elif userDetail.id != user.id %}
-            <button onclick="location.href='{% url 'accounts:follow' userDetail.id 1 %}'"> フォロー</button>
+            <button onclick="location.href='{% url 'accounts:follow' userDetail.id %}'"> フォロー</button>
             <br>
             <br>
         {% endif %}
