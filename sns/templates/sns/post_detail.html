@@ -1,6 +1,15 @@
 {% extends 'base.html' %}
 
 {% block content %}
+    <style>
+        button {
+            background: none;
+            border : none;
+            outline: none;
+            box-shadow:none;
+        }
+    </style>
+
     <h1>{{ post.title }}</h1>
     -
     <a href='{% url "accounts:user" post.author.id %}'>
@@ -10,6 +19,16 @@
         {{ post.created_at }}<br><br>
         {{ post.detail }}
     </div>
+    <p style="margin-left:150px">
+        {% if goods %}
+            <button onclick="location.href='{% url 'sns:ungood' post.id 0 %}'">
+                <font color="red" size="5">♥</font>
+            </button>
+        {% else %}
+            <button onclick="location.href='{% url 'sns:good' post.id 0 %}'"><font size="5">♡</font></button>
+        {% endif %}
+         : {{ post.good_num }}
+    </p>
     <br>
     <br>
     {% if request.user.id == object.author_id %}
@@ -18,5 +37,5 @@
             <a href='{% url "sns:delete" post.pk %}'>削除</a>
         </div>
     {% endif %}
-    
+
 {% endblock %}

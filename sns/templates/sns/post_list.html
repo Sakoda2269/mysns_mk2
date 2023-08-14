@@ -5,9 +5,16 @@
     p {
         margin-left:1rem;
     }
+    button {
+        background: none;
+        border : none;
+        outline: none;
+        box-shadow:none;
+    }
 </style>
 <h1>タイムライン</h1><br><br>
 <div>
+    {% load static %}
     {% for post in object_list reversed %}
         <a href='{% url "accounts:user" post.author.pk%}'>
             {{ post.author }}
@@ -20,15 +27,29 @@
         <p>
             {{ post.detail }}
         </p>
-        <br>
+        <p style="margin-left:150px">
+            {% if post in goods %}
+                    <button onclick="location.href='{% url 'sns:ungood' post.id 1 %}'">
+                        <font color="red" size="5">♥</font>
+                    </button>
+            {% else %}
+                    <button onclick="location.href='{% url 'sns:good' post.id 1 %}'">
+                        <font size="5">♡</font>
+                    </button>
+                
+            {% endif %}
+             : {{ post.good_num }}
+            <hr size="30" color="red" width="50%" align="left">
+        </p>
     {% endfor %}
 </div>
-<br>
-<br>
 <br>
 {% if user.is_authenticated %}
     <div>
         <a href='{% url "sns:create" %}'>投稿する</a>
     </div>
 {% endif %}
+<br>
+<br>
+
 {% endblock %}

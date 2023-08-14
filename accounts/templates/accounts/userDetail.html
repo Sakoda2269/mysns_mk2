@@ -4,20 +4,18 @@
         {{ userDetail.username }} 
     </h1>
     <p>
-        @{{ userDetail.usertag }}
-    </p>
-    {% if following %}
-        <a href='{% url "accounts:unfollow" userDetail.id %}'>
-            フォロー解除
+        @{{ userDetail.usertag }} --
+        {% if following %}
+            フォロー中
+            <button onclick="location.href='{% url 'accounts:unfollow' userDetail.id %}'"> フォロー解除</button>
             <br>
             <br>    
-        </a>
-    {% elif userDetail.id != user.id %}
-        <a href='{% url "accounts:follow" userDetail.id %}'>フォロー</a>
-        <br>
-        <br>
-    {% endif %}
-    
+        {% elif userDetail.id != user.id %}
+            <button onclick="location.href='{% url 'accounts:follow' userDetail.id 1 %}'"> フォロー</button>
+            <br>
+            <br>
+        {% endif %}
+    </p>
     <p>
         {{ userDetail.created_at }}に登録
     </p>
@@ -26,6 +24,7 @@
             {{ post.title }}
         </a> -
         {{ post.created_at }}
+        <br>
         <br>
     {% endfor %}
 {% endblock %}
