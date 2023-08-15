@@ -16,13 +16,9 @@ class IndexView(generic.ListView):
         context = super().get_context_data(*args, **kwargs)
         good = Good.objects.filter(gooder=self.request.user)
         tmp = set()
-        numdict = {}
-        for m in Post.objects.all():
-            numdict[str(m.id)] = m.id
         for g in good:
-            tmp.add(g.post)
+            tmp.add(g.post.id)
         context["goods"] = tmp
-        context["num"] = numdict
         return context  
     
 

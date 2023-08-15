@@ -28,15 +28,17 @@
             {{ post.detail }}
         </p>
         <p style="margin-left:150px">
-            <button onclick="location.href='{% url 'sns:good' post.id 1 %}'">
-                {% if post in goods %}
-                    <font color="red" size="5">♥</font>
-                {% else %}
-                    <font size="5">♡</font>
-                {% endif %}
+            <button onClick="on_good('{{ post.id }}')">
+                <div id="{{ post.id }}">
+                    {% if post.id in goods %}
+                        <font color="red" size="5">♥</font>
+                    {% else %}
+                        <font size="5">♡</font>
+                    {% endif %}
+                </div>
             </button>
-             : {{ post.good_num }} イイね
-            <hr size="30" color="red" width="50%" align="left">
+        : <span id="num_{{ post.id }}">{{ post.good_num }}</span> イイね
+        <hr size="30" color="red" width="50%" align="left">
         </p>
     {% endfor %}
 </div>
@@ -48,6 +50,34 @@
 {% endif %}
 <br>
 <br>
-
 {% endblock %}
 
+{% block extrajs %}
+<script type="text/javascript">
+
+function on_good(post_id){
+    console.log(post_id);
+    const url = '{% url "sns:ajaxgood" %}';
+    fetch(url, {
+        method: 'POST',
+        body: 'post_id=' + String(post_id),
+        headers:{
+            'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
+            'X-CSRFToken': '{{ csrf_token }}',
+        },
+    }).then(response  => {
+        return response.json();
+    }).then(response => {
+        document.getElementById('num_' + String(post_id)).textContent = response.num;
+        if(response.method == "create"){
+            document.getElementById(String(post_id)).innerHTML = '<font color="red" size="5">♥</font>'
+        }else{
+            document.getElementById(String(post_id)).innerHTML = '<font size="5">♡</font>';
+        }
+    }).catch(error => {
+        console.log(error);
+    });
+}
+
+</script>
+{% endblock %}
