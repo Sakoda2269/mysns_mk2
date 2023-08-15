@@ -20,14 +20,16 @@
         {{ post.detail }}
     </div>
     <p style="margin-left:150px">
-        <button onclick="location.href='{% url 'sns:good' post.id 0 %}'">
-            {% if goods %}
-                <font color="red" size="5">♥</font>
-            {% else %}
-                <font size="5">♡</font>
-            {% endif %}
+        <button type="button" id="ajax-good">
+            <div id="result">
+                {% if goods %}
+                    <font color="red" size="5">♥</font>
+                {% else %}
+                    <font size="5">♡</font>
+                {% endif %}
+            </div>
         </button>
-         : {{ post.good_num }} イイね
+         : <span id="num">{{ post.good_num }}</span> イイね
     </p>
     <br>
     <br>
@@ -38,4 +40,32 @@
         </div>
     {% endif %}
 
+{% endblock %}
+
+{% block extrajs %}
+<script type="text/javascript">
+document.getElementById('ajax-good').addEventListener('click', e => {
+    e.preventDefault();
+    const url = '{% url "sns:ajaxgood" %}';
+    fetch(url, {
+        method: 'POST',
+        body: 'post_id={{ post.id }}',
+        headers:{
+            'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
+            'X-CSRFToken': '{{ csrf_token }}',
+        },
+    }).then(response  => {
+        return response.json();
+    }).then(response => {
+        document.getElementById('num').textContent = response.num;
+        if(response.method == "create"){
+            document.getElementById('result').innerHTML = '<font color="red" size="5">♥</font>'
+        }else{
+            document.getElementById('result').innerHTML = '<font size="5">♡</font>';
+        }
+    }).catch(error => {
+        console.log(error);
+    });
+});
+</script>
 {% endblock %}

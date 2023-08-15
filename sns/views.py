@@ -4,7 +4,7 @@ from django.views import generic
 from .models import Post, Good
 from django.urls import reverse_lazy
 from django.forms.models import BaseModelForm
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 
 
@@ -59,7 +59,7 @@ class DeleteView(generic.edit.DeleteView):
 def good(request, post_id, isList):
     post = get_object_or_404(Post, id=post_id)
     is_good = Good.objects.filter(gooder=request.user, post=post)
-    if(len(is_good)):
+    if is_good.exists():
         is_good.delete()
         post.good_num-=1
         post.save()
@@ -74,3 +74,27 @@ def good(request, post_id, isList):
     if isList:
         return redirect("/sns/")
     return redirect(f"/sns/post/{post_id}")
+
+
+def ajax_good(request):
+    post_id = request.POST['post_id']
+    print(post_id)
+    post = get_object_or_404(Post, id=post_id)
+    good = Good.objects.filter(post=post, gooder=request.user)
+    context={}
+    if good.exists():
+        good.delete()
+        post.good_num-=1
+        post.save()
+        context["method"] = "delete"
+    else:
+        Good.objects.create(
+            post = post,
+            gooder = request.user
+        )
+        post.good_num+=1
+        post.save()
+        context["method"] = "create"
+    context["num"] = str(post.good_num)
+    return JsonResponse(context)
+    
