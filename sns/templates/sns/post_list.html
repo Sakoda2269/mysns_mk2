@@ -28,17 +28,14 @@
             {{ post.detail }}
         </p>
         <p style="margin-left:150px">
-            {% if post in goods %}
-                    <button onclick="location.href='{% url 'sns:ungood' post.id 1 %}'">
-                        <font color="red" size="5">♥</font>
-                    </button>
-            {% else %}
-                    <button onclick="location.href='{% url 'sns:good' post.id 1 %}'">
-                        <font size="5">♡</font>
-                    </button>
-                
-            {% endif %}
-             : {{ post.good_num }}
+            <button onclick="location.href='{% url 'sns:good' post.id 1 %}'">
+                {% if post in goods %}
+                    <font color="red" size="5">♥</font>
+                {% else %}
+                    <font size="5">♡</font>
+                {% endif %}
+            </button>
+             : {{ post.good_num }} イイね
             <hr size="30" color="red" width="50%" align="left">
         </p>
     {% endfor %}

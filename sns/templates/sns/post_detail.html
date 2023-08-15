@@ -20,14 +20,14 @@
         {{ post.detail }}
     </div>
     <p style="margin-left:150px">
-        {% if goods %}
-            <button onclick="location.href='{% url 'sns:ungood' post.id 0 %}'">
+        <button onclick="location.href='{% url 'sns:good' post.id 0 %}'">
+            {% if goods %}
                 <font color="red" size="5">♥</font>
-            </button>
-        {% else %}
-            <button onclick="location.href='{% url 'sns:good' post.id 0 %}'"><font size="5">♡</font></button>
-        {% endif %}
-         : {{ post.good_num }}
+            {% else %}
+                <font size="5">♡</font>
+            {% endif %}
+        </button>
+         : {{ post.good_num }} イイね
     </p>
     <br>
     <br>

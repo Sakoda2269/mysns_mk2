@@ -12,5 +12,4 @@ urlpatterns = [
     path("update/<str:pk>/", views.UpdateView.as_view(), name="update"),
     path("delete/<str:pk>/", views.DeleteView.as_view(), name="delete"),
     path("good/<str:post_id>/<int:isList>/", views.good, name="good"),
-    path("ungood/<str:post_id>/<int:isList>/", views.ungood, name="ungood"),
 ]

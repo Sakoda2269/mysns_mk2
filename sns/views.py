@@ -57,23 +57,20 @@ class DeleteView(generic.edit.DeleteView):
 
 
 def good(request, post_id, isList):
-    Good.objects.create(
-        post = get_object_or_404(Post, id=post_id),
-        gooder = request.user
-    )
-    post = Post.objects.get(id=post_id)
-    post.good_num+=1
-    post.save()
-    if isList:
-        return redirect("/sns/")
-    return redirect(f"/sns/post/{post_id}")
-
-
-def ungood(request, post_id, isList):
-    Good.objects.get(gooder=request.user, post=Post.objects.get(id=post_id)).delete()
-    post = Post.objects.get(id=post_id)
-    post.good_num-=1
-    post.save()
+    post = get_object_or_404(Post, id=post_id)
+    is_good = Good.objects.filter(gooder=request.user, post=post)
+    if(len(is_good)):
+        is_good.delete()
+        post.good_num-=1
+        post.save()
+    else:
+        Good.objects.create(
+            post = post,
+            gooder = request.user
+        )
+        post.good_num+=1
+        post.save()
+    
     if isList:
         return redirect("/sns/")
     return redirect(f"/sns/post/{post_id}")
