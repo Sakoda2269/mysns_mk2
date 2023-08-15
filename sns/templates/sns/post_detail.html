@@ -20,16 +20,19 @@
         {{ post.detail }}
     </div>
     <p style="margin-left:150px">
-        <button type="button" id="ajax-good">
-            <div id="result">
-                {% if goods %}
-                    <font color="red" size="5">♥</font>
-                {% else %}
-                    <font size="5">♡</font>
-                {% endif %}
-            </div>
-        </button>
-         : <span id="num">{{ post.good_num }}</span> イイね
+        <form id="ajax-good" action="{% url 'sns:ajaxgood' %}" method="POST">
+            {% csrf_token %}
+            <button type="submit">
+                <div class="result">
+                    {% if goods %}
+                        <font color="red" size="5">♥</font>
+                    {% else %}
+                        <font size="5">♡</font>
+                    {% endif %}
+                </div>
+            </button>
+            : <span class="num">{{ post.good_num }}</span> イイね
+        </form>
     </p>
     <br>
     <br>
@@ -40,32 +43,59 @@
         </div>
     {% endif %}
 
-{% endblock %}
-
-{% block extrajs %}
-<script type="text/javascript">
-document.getElementById('ajax-good').addEventListener('click', e => {
-    e.preventDefault();
-    const url = '{% url "sns:ajaxgood" %}';
-    fetch(url, {
-        method: 'POST',
-        body: 'post_id={{ post.id }}',
-        headers:{
-            'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
-            'X-CSRFToken': '{{ csrf_token }}',
-        },
-    }).then(response  => {
-        return response.json();
-    }).then(response => {
-        document.getElementById('num').textContent = response.num;
-        if(response.method == "create"){
-            document.getElementById('result').innerHTML = '<font color="red" size="5">♥</font>'
-        }else{
-            document.getElementById('result').innerHTML = '<font size="5">♡</font>';
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script>
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = jQuery.trim(cookies[i]);
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
         }
-    }).catch(error => {
-        console.log(error);
+        return cookieValue;
+    }
+
+    var csrftoken = getCookie('csrftoken');
+
+    function csrfSafeMethod(method) {
+        // these HTTP methods do not require CSRF protection
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+
+    $.ajaxSetup({
+        beforeSend: function (xhr, settings) {
+            if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            }
+        }
     });
-});
+
+    $('#ajax-good').on('submit', function(e) {
+        e.preventDefault();
+        $.ajax({
+            'url': '{% url "sns:ajaxgood" %}',
+            'type': 'POST',
+            'data': {
+                'post_id': '{{ post.id }}',
+            },
+            'dataType': 'json'
+        })
+        .done(function(response){
+            console.log(response.num);
+            if (response.method == "create"){
+                $('.result').html('<font color="red" size="5">♥</font>');
+            }else{
+                $('.result').html('<font size="5">♡</font>');
+            }
+            $('.num').html(response.num);
+        });
+    });
 </script>
+
 {% endblock %}
