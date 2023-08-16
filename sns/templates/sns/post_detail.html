@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block content %}
+{% block extra_style %}
     <style>
         button {
             background: none;
@@ -9,6 +9,9 @@
             box-shadow:none;
         }
     </style>
+{% endblock %}
+
+{% block content %}
 
     <h1>{{ post.title }}</h1>
     -
@@ -20,15 +23,19 @@
         {{ post.detail }}
     </div>
     <p style="margin-left:150px">
-        <button id="ajax-good">
-            <div class="result">
-                {% if goods %}
-                    <font color="red" size="5">♥</font>
-                {% else %}
-                    <font size="5">♡</font>
-                {% endif %}
-            </div>
-        </button>
+        {% if request.user.is_anonymous %}
+            <button onClick="location.href='{% url 'sns:good' post.id 0 %}'">♡</button>
+        {% else %}
+            <button id="ajax-good">
+                <div class="result">
+                    {% if goods %}
+                        <font color="red" size="5">♥</font>
+                    {% else %}
+                        <font size="5">♡</font>
+                    {% endif %}
+                </div>
+            </button>
+        {% endif %}
         : <span class="num">{{ post.good_num }}</span> イイね
     </p>
     <br>

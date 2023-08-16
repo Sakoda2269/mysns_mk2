@@ -5,12 +5,12 @@
     p {
         margin-left:1rem;
     }
-    button {
-        background: none;
-        border : none;
+    .good, .good:focus, .good:hover {
+        border: none;
         outline: none;
-        box-shadow:none;
+        background: none;
     }
+
 </style>
 <h1>タイムライン</h1><br><br>
 {{ request.user }}
@@ -30,11 +30,11 @@
         </p>
         <p style="margin-left:150px">
         {% if request.user.is_anonymous %}
-            <button onClick="location.href='{% url 'sns:good' post.id 1 %}'">♡</button>
+            <button onClick="location.href='{% url 'sns:good' post.id 1 %}'" class="good">♡</button>
         {% else %}
-            <button onClick="on_good('{{ post.id }}')">
+            <button onClick="on_good('{{ post.id }}')" class="good">
                 <div id="{{ post.id }}">
-                    {% if logined and post.id in goods %}
+                    {% if post.id in goods %}
                         <font color="red" size="5">♥</font>
                     {% else %}
                         <font size="5">♡</font>
@@ -49,12 +49,14 @@
 </div>
 <br>
 {% if user.is_authenticated %}
-    <div>
-        <a href='{% url "sns:create" %}'>投稿する</a>
+    <div style="position: fixed;bottom: 100px;right: 100px">
+        <button onClick="location.href='{% url 'sns:create' %}'" type="button" 
+        class="btn btn-primary rounded-circle p-0" style="width: 4rem;height: 4rem;"><font size="6px">+</font></button>
     </div>
 {% endif %}
 <br>
 <br>
+
 {% endblock %}
 
 {% block extrajs %}

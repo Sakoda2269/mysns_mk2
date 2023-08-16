@@ -16,9 +16,7 @@ class IndexView(generic.ListView):
     def get_context_data(self, *args, **kwargs: Any):
         context = super().get_context_data(*args, **kwargs)
         if self.request.user.is_anonymous:
-            context["logined"] = False
             return context
-        context["logined"] = True
         good = Good.objects.filter(gooder=self.request.user)
         tmp = set()
         for g in good:
@@ -33,6 +31,8 @@ class DetailView(generic.DetailView):
 
     def get_context_data(self, *args, **kwargs: Any):
         context = super().get_context_data(*args, **kwargs)
+        if self.request.user.is_anonymous:
+            return context
         post = context.get("object")
         context["goods"] = len(Good.objects.filter(gooder=self.request.user, post=post))
         return context
@@ -62,9 +62,9 @@ def good(request, post_id, isList):
     post = get_object_or_404(Post, id=post_id)
     is_good = Good.objects.filter(gooder=request.user, post=post)
     if is_good.exists():
-        is_good.delete()
-        post.good_num-=1
-        post.save()
+        if isList:
+            return redirect("/sns/")
+        return redirect(f"/sns/post/{post_id}")
     else:
         Good.objects.create(
             post = post,

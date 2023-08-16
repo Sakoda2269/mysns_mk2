@@ -9,6 +9,9 @@
     </head>
     <body>
 
+    {% block extra_style %}
+    {% endblock %}
+
         <nav class='navbar navbar-expand-sm navbar-dark bg-dark fixed-top'>
             <a class='navbar-brand' href='{% url "sns:index" %}'>SNS</a>
             <ul class="navbar-nav">
