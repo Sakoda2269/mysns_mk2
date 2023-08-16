@@ -39,11 +39,9 @@ def follow(request, followed_id):
     followed_user = get_object_or_404(CustomUser, id=followed_id)
     if following_user == followed_user:
         return redirect(f"/accounts/user/{followed_user.id}")
-    Follower.objects.create(following=following_user, followed=followed_user)
-    return redirect(f"/accounts/user/{followed_user.id}")
-
-def unfollow(request, followed_id):
-    following_user = request.user
-    followed_user = get_object_or_404(CustomUser, id=followed_id)
-    Follower.objects.get(following=following_user, followed=followed_user).delete()
+    already_followed = Follower.objects.filter(following=following_user, followed=followed_user).exists()
+    if already_followed:
+        Follower.objects.get(following=following_user, followed=followed_user).delete()
+    else:
+        Follower.objects.create(following=following_user, followed=followed_user)
     return redirect(f"/accounts/user/{followed_user.id}")

@@ -20,7 +20,7 @@
         {% if following %}
             フォロー中
             <button type="button" class="btn btn-warning w-120px h-40px" 
-                onclick="location.href='{% url 'accounts:unfollow' userDetail.id %}'"> フォロー解除</button>
+                onclick="location.href='{% url 'accounts:follow' userDetail.id %}'"> フォロー解除</button>
             <br>
             <br>    
         {% elif userDetail.id != user.id %}
