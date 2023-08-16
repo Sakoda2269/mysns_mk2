@@ -13,7 +13,6 @@
 
 </style>
 <h1>タイムライン</h1><br><br>
-{{ request.user }}
 <div>
     {% load static %}
     {% for post in object_list reversed %}
@@ -26,7 +25,7 @@
             {{ post.created_at }}
         <br>
         <p>
-            {{ post.detail }}
+            {{ post.detail | truncatechars:30}}
         </p>
         <p style="margin-left:150px">
         {% if request.user.is_anonymous %}

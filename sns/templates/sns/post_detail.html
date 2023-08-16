@@ -2,12 +2,11 @@
 
 {% block extra_style %}
     <style>
-        button {
-            background: none;
-            border : none;
-            outline: none;
-            box-shadow:none;
-        }
+    .good, .good:focus, .good:hover {
+        border: none;
+        outline: none;
+        background: none;
+    }
     </style>
 {% endblock %}
 
@@ -24,9 +23,9 @@
     </div>
     <p style="margin-left:150px">
         {% if request.user.is_anonymous %}
-            <button onClick="location.href='{% url 'sns:good' post.id 0 %}'">♡</button>
+            <button onClick="location.href='{% url 'sns:good' post.id 0 %}'" class="good">♡</button>
         {% else %}
-            <button id="ajax-good">
+            <button id="ajax-good" class="good">
                 <div class="result">
                     {% if goods %}
                         <font color="red" size="5">♥</font>
