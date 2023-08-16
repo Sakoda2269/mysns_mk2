@@ -1,5 +1,16 @@
 {% extends 'base.html' %}
 
+{% block extra_style %}
+<style>
+    .w-125px {
+        width: 125px !important;
+    }
+    .h-34px {
+        height: 34px !important;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
     <h1>投稿の削除</h1>
     <p>以下の投稿をを削除しますか？</p><br><br>
@@ -9,10 +20,11 @@
     <br>
     <form action="" method="post">
         {% csrf_token %}
-        <button type="submit" class="submit delete">削除する</button>
+        <button type="submit" class="submit delete btn btn-danger rounded-pill w-125px h-34px">削除する</button>
     </form>
     <br>
     <div>
-        <a href="JavaScript:history.back()">&lt; 戻る</a>
-    </div>
+        <button onClick="location.href = 'JavaScript:history.back()'" class="btn btn-secondary rounded-pill w-125px h-34px">
+            &lt; 戻る
+        </button>
 {% endblock %}

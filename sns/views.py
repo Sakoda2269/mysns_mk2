@@ -2,6 +2,7 @@ from typing import Any, Dict
 from django.db.models.query import QuerySet
 from django.views import generic
 from .models import Post, Good
+from .forms import CreatePost
 from django.urls import reverse_lazy
 from django.forms.models import BaseModelForm
 from django.http import HttpResponse, JsonResponse
@@ -40,16 +41,17 @@ class DetailView(generic.DetailView):
 
 class CreateView(generic.edit.CreateView):
     model = Post
-    fields = ["title", "detail"]
+    form_class = CreatePost
 
 
     def form_valid(self, form: BaseModelForm) -> HttpResponse:
         form.instance.author = self.request.user
         return super(CreateView, self).form_valid(form)
-
+    
+    
 class UpdateView(generic.edit.UpdateView):
     model = Post
-    fields = ["title", "detail"]
+    form_class = CreatePost
 
 
 class DeleteView(generic.edit.DeleteView):

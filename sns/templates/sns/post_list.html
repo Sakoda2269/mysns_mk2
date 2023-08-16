@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block content %}
+{% block extra_style %}
 <style>
     p {
         margin-left:1rem;
@@ -10,8 +10,16 @@
         outline: none;
         background: none;
     }
-
+    .w-60px {
+            width: 60px !important;
+        }
+    .h-60px {
+        height: 60px !important;
+    }
 </style>
+{% endblock %}
+
+{% block content %}
 <h1>タイムライン</h1><br><br>
 <div>
     {% load static %}
@@ -50,7 +58,7 @@
 {% if user.is_authenticated %}
     <div style="position: fixed;bottom: 100px;right: 100px">
         <button onClick="location.href='{% url 'sns:create' %}'" type="button" 
-        class="btn btn-primary rounded-circle p-0" style="width: 4rem;height: 4rem;"><font size="6px">+</font></button>
+        class="btn btn-primary rounded-circle p-0 w-60px h-60px"><font size="6px">+</font></button>
     </div>
 {% endif %}
 <br>

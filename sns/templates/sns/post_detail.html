@@ -7,6 +7,12 @@
         outline: none;
         background: none;
     }
+    .w-125px {
+            width: 125px !important;
+        }
+    .h-34px {
+        height: 34px !important;
+    }
     </style>
 {% endblock %}
 
@@ -19,7 +25,7 @@
     </a>
     <div>
         {{ post.created_at }}<br><br>
-        {{ post.detail }}
+        {{ post.detail | linebreaks }}
     </div>
     <p style="margin-left:150px">
         {% if request.user.is_anonymous %}
@@ -41,8 +47,8 @@
     <br>
     {% if request.user.id == object.author_id %}
         <div>
-            <a href='{% url "sns:update" post.pk %}'>編集</a>|
-            <a href='{% url "sns:delete" post.pk %}'>削除</a>
+            <button onClick="location.href='{% url 'sns:update' post.pk %}'" class="btn btn-success rounded-pill w-125px h-34px">編集</button>
+            <button onClick="location.href='{% url 'sns:delete' post.pk %}'" class="btn btn-danger rounded-pill w-125px h-34px">削除</button>
         </div>
     {% endif %}
 

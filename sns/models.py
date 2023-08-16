@@ -7,7 +7,7 @@ import uuid
 class Post(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=50)
-    detail = models.CharField(max_length=255)
+    detail = models.TextField(max_length=255)
     author = models.ForeignKey(
         get_user_model(),
         on_delete=models.CASCADE
