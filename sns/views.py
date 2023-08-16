@@ -82,7 +82,7 @@ def ajax_good(request):
     post_id = request.POST['post_id']
     post = get_object_or_404(Post, id=post_id)
     good = Good.objects.filter(post=post, gooder=request.user)
-    context={}
+    context = {}
     if good.exists():
         good.delete()
         post.good_num-=1

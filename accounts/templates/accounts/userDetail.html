@@ -3,10 +3,10 @@
 {% block extra_style %}
     <style>
         .w-120px {
-            width: 120px !important;
+            width: 125px !important;
         }
         .h-40px {
-            height: 40px !important;
+            height: 34px !important;
         }
     </style>
 {% endblock %}
@@ -16,16 +16,25 @@
         {{ userDetail.username }} 
     </h1>
     <p>
-        @{{ userDetail.usertag }} --
-        {% if following %}
-            フォロー中
-            <button type="button" class="btn btn-warning w-120px h-40px" 
-                onclick="location.href='{% url 'accounts:follow' userDetail.id %}'"> フォロー解除</button>
+        {% if user.id == userDetail.id %}
+            @{{ userDetail.usertag }}
+        {% else %}
+            <div class="following">
+                @{{ userDetail.usertag }} 
+                {% if following %}
+                    --フォロー中
+                {% endif %}
+            </div>
             <br>
-            <br>    
-        {% elif userDetail.id != user.id %}
-            <button type="button" class="btn btn-primary w-120px h-40px" 
-                onclick="location.href='{% url 'accounts:follow' userDetail.id %}'"> フォロー</button>
+            <button type="button" class="btn {{ btn_class }} w-120px h-40px rounded-pill" id="ajax_follow">
+                <div class="result">
+                    {% if following %}
+                        フォロー解除
+                    {% elif userDetail.id != user.id %}
+                        フォロー
+                    {% endif %}
+                </div>
+            </button>
             <br>
             <br>
         {% endif %}
@@ -41,4 +50,32 @@
         <br>
         <br>
     {% endfor %}
+{% endblock %}
+
+{% block extra_ajax %}
+    $('#ajax_follow').on('click', function(e) {
+        e.preventDefault();
+        $.ajax({
+            'url': '{% url "accounts:ajax_follow" %}',
+            'type': 'POST',
+            'data': {
+                'followed_user_id': '{{ userDetail.id }}',
+            },
+            'dataType': 'json'
+        })
+        .done(function(response){
+            if (response.method == "follow"){
+                $('.result').html('フォロー解除');
+                $('.following').html('@{{ userDetail.usertag }} --フォロー中');
+                $('#ajax_follow').removeClass('btn-primary');
+                $('#ajax_follow').addClass('btn-warning');
+            }else{
+                $('.result').html('フォロー');
+                $('.following').html('@{{ userDetail.usertag }}');
+                $('#ajax_follow').addClass('btn-primary');
+                $('#ajax_follow').removeClass('btn-warning');
+            }
+            $('.num').html(response.num);
+        });
+    });
 {% endblock %}
