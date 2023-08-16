@@ -13,6 +13,7 @@
     }
 </style>
 <h1>タイムライン</h1><br><br>
+{{ request.user }}
 <div>
     {% load static %}
     {% for post in object_list reversed %}
@@ -28,15 +29,19 @@
             {{ post.detail }}
         </p>
         <p style="margin-left:150px">
+        {% if request.user.is_anonymous %}
+            <button onClick="location.href='{% url 'sns:good' post.id 1 %}'">♡</button>
+        {% else %}
             <button onClick="on_good('{{ post.id }}')">
                 <div id="{{ post.id }}">
-                    {% if post.id in goods %}
+                    {% if logined and post.id in goods %}
                         <font color="red" size="5">♥</font>
                     {% else %}
                         <font size="5">♡</font>
                     {% endif %}
                 </div>
             </button>
+        {% endif %}
         : <span id="num_{{ post.id }}">{{ post.good_num }}</span> イイね
         <hr size="30" color="red" width="50%" align="left">
         </p>
