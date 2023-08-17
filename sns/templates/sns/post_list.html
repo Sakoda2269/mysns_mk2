@@ -9,49 +9,75 @@
         border: none;
         outline: none;
         background: none;
+        display: inline;
     }
     .w-60px {
             width: 60px !important;
-        }
+    }
+    .w-150px {
+        width: 60% !important;
+    }
+    .h-50px{
+        height: 50px !important;
+    }
     .h-60px {
         height: 60px !important;
+    }
+    .on-a{
+        position: relative;
+        z-index: 1;
     }
 </style>
 {% endblock %}
 
 {% block content %}
+
 <h1>タイムライン</h1><br><br>
 <div>
     {% load static %}
     {% for post in object_list reversed %}
-        <a href='{% url "accounts:user" post.author.pk%}'>
-            {{ post.author }}
-        </a>-
-        <a href='{% url "sns:post" post.pk %}'>
-            {{ post.title }} 
-        </a>-
-            {{ post.created_at }}
-        <br>
-        <p>
-            {{ post.detail | truncatechars:30}}
-        </p>
-        <p style="margin-left:150px">
-        {% if request.user.is_anonymous %}
-            <button onClick="location.href='{% url 'sns:good' post.id 1 %}'" class="good">♡</button>
-        {% else %}
-            <button onClick="on_good('{{ post.id }}')" class="good">
-                <div id="{{ post.id }}">
-                    {% if post.id in goods %}
-                        <font color="red" size="5">♥</font>
+        <h6>
+            <a href='{% url "accounts:user" post.author.pk%}'>
+                {{ post.author }}
+            </a>
+        </h6>
+        <div class="card w-150px" style="position:relative;">
+        <a href="{% url 'sns:post' post.pk %}" style="position:absolute;inset:0;">
+            <div class="card-header bg-success h-50px">
+                <h5 style="display:inline;">
+                    <a href='{% url "sns:post" post.pk %}' class="on-a">
+                        {{ post.title }} 
+                    </a>
+                </h5>
+                <font color="white">
+                    {{ post.created_at }}
+                </font>
+            </div>
+            <div class="card-body">
+                <p class="card-text">
+                    {{ post.detail }}
+                </p>
+            </div>
+            <div class="card-footer h-50px" align="right">
+                    {% if request.user.is_anonymous %}
+                        <button onClick="location.href='{% url 'sns:good' post.id 1 %}'" class="good on-a">♡</button>
                     {% else %}
-                        <font size="5">♡</font>
+                        <button onClick="on_good('{{ post.id }}')" class="good on-a" >
+                            <div id="{{ post.id }}" style="display:inline;">
+                                {% if post.id in goods %}
+                                    <font color="red" size="5">♥</font>
+                                {% else %}
+                                    <font size="5">♡</font>
+                                {% endif %}
+                            </div>
+                        </button>
                     {% endif %}
+                    <font size="4">
+                        <div id="num_{{ post.id }}" style="display:inline;">:{{ post.good_num }}イイね</div> 
+                    </font>
                 </div>
-            </button>
-        {% endif %}
-        : <span id="num_{{ post.id }}">{{ post.good_num }}</span> イイね
-        <hr size="30" color="red" width="50%" align="left">
-        </p>
+        </div>
+        <br>
     {% endfor %}
 </div>
 <br>
@@ -82,7 +108,7 @@ function on_good(post_id){
     }).then(response  => {
         return response.json();
     }).then(response => {
-        document.getElementById('num_' + String(post_id)).textContent = response.num;
+        document.getElementById('num_' + String(post_id)).textContent = ":" + String(response.num) + "イイね";
         if(response.method == "create"){
             document.getElementById(String(post_id)).innerHTML = '<font color="red" size="5">♥</font>'
         }else{
