@@ -15,7 +15,7 @@
     <h1>投稿の削除</h1>
     <p>以下の投稿をを削除しますか？</p><br><br>
     <h4>{{ object.title }}</h4>
-    <p>{{ object.detail }}</p>
+    <p>{{ object.detail | linebreaks}}</p>
     <br>
     <br>
     <form action="" method="post">
