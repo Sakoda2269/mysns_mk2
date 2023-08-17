@@ -17,7 +17,7 @@
 {% endblock %}
 
 {% block content %}
-
+<div>
     <h1>{{ post.title }}</h1>
     -
     <a href='{% url "accounts:user" post.author.id %}'>
@@ -34,9 +34,9 @@
             <button id="ajax-good" class="good">
                 <div class="result">
                     {% if goods %}
-                        <font color="red" size="5">♥</font>
+                        <i class="fa-solid fa-heart" style="color: #ff0000;"></i>
                     {% else %}
-                        <font size="5">♡</font>
+                        <i class="fa-regular fa-heart"></i>
                     {% endif %}
                 </div>
             </button>
@@ -51,10 +51,11 @@
             <button onClick="location.href='{% url 'sns:delete' post.pk %}'" class="btn btn-danger rounded-pill w-125px h-34px">削除</button>
         </div>
     {% endif %}
-
+</div>
 {% endblock %}
 
 {% block extra_ajax %}
+    let id;
     $('#ajax-good').on('click', function(e) {
         e.preventDefault();
         $.ajax({
@@ -66,11 +67,14 @@
             'dataType': 'json'
         })
         .done(function(response){
-            console.log(response.num);
             if (response.method == "create"){
-                $('.result').html('<font color="red" size="5">♥</font>');
+                $('.result').html('<i class="fa-solid fa-heart fa-beat" style="color: #ff0000;"></i>');
+                id = setTimeout(function(){
+                    $('.result').html('<i class="fa-solid fa-heart" style="color: #ff0000;"></i>');
+                }, 1000)
             }else{
-                $('.result').html('<font size="5">♡</font>');
+                $('.result').html('<i class="fa-regular fa-heart"></i>');
+                clearTimeout(id)
             }
             $('.num').html(response.num);
         });
