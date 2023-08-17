@@ -13,9 +13,15 @@
     </head>
     <body>
 
+    <style>
+        .w-40px{
+            width: 40px !important;
+            height: 40px !important;
+        }
+    </style>
+
     {% block extra_style %}
     {% endblock %}
-
         <nav class='navbar navbar-expand-sm navbar-dark bg-dark fixed-top'>
             <a class='navbar-brand' href='{% url "sns:index" %}'>SNS</a>
             <ul class="navbar-nav">
@@ -44,9 +50,34 @@
         </nav>
 
         
-        <div class='container'>
-            {% block content %}
-            {% endblock %}
+        <div class='container-fluid'>
+            <div class="row">
+                <div class="col-1">
+                    <div style="position: sticky; top: 75px;">
+                            <button class="btn btn-primary rounded-circle p-0 w-40px float-right"
+                                 onClick="location.href='{% url 'sns:index' %}'">
+                                <i class="fa-solid fa-house"></i>
+                            </button>
+                            <br>
+                            <br>
+                            {% if user.is_anonymous %}
+                                <button class="btn btn-primary rounded-circle p-0 w-40px float-right" 
+                                    onClick="location.href='/accounts/login'">
+                                    <i class="fa-solid fa-user"></i>
+                                </button>
+                            {% else %}
+                                <button class="btn btn-primary rounded-circle p-0 w-40px float-right" 
+                                    onClick="location.href='{% url 'accounts:user' user.id %}'">
+                                    <i class="fa-solid fa-user"></i>
+                                </button>
+                            {% endif %}
+                    </div>
+                </div>
+                <div class="col-8">
+                    {% block content %}
+                    {% endblock %}
+                </div>
+            </div>
         </div>
 
         <div>
