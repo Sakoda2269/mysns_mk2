@@ -23,15 +23,22 @@
     <div align="center">
         <h2>投稿の{{ object|yesno:'更新,作成' }}</h2>
     </div>
-    <br>
     <form action="" method="post">
         {% csrf_token %}
         {% for fm in form %}
+            <br>
             {{ fm }}
             <br>
-            <br>
         {% endfor %}
-        <div align="center">
+        title:<div style="display:inline;" id="title_length">0</div>文字
+        <div id="error_area_title_length" style="color: #ff0000;display: inline;float: right;"></div>
+        <br>
+        detail:<div style="display:inline;" id="detail_length">0</div>文字
+        <div id="error_area_detail_length" style="color:#ff0000;display: inline;float: right;"></div>
+        <br>
+        <br>
+        <br>
+        <div align="center" id="confirm">
             <button type="submit" class="submit btn btn-primary w-125px h-34px rounded-pill">
                 {{ object|yesno:'更新,投稿' }}
             </button>
@@ -43,4 +50,33 @@
             &lt; 戻る
         </button>
     </div>
+{% endblock %}
+
+{% block extrajs %}
+<script type="text/javascript">
+
+function ShowLength(str, result_id, max_length){
+    document.getElementById(result_id + "_length").innerHTML = str.length;
+    if(str.length > max_length){
+        document.getElementById("error_area_" + result_id + "_length").innerHTML = "文字数が" + String(max_length) + "を超えています！";
+        document.getElementById("confirm").innerHTML = '<button type="submit" class="submit btn btn-primary'+
+                                                        ' w-125px h-34px rounded-pill" disabled title="エラーがあります！">'+
+                                                        "{{ object|yesno:'更新,投稿' }}"+
+                                                        "</button>";
+    }else if(str.length == 0){
+        document.getElementById("error_area_" + result_id + "_length").innerHTML = "入力してください!";
+        document.getElementById("confirm").innerHTML = '<button type="submit" class="submit btn btn-primary'+
+                                                        ' w-125px h-34px rounded-pill" disabled title="エラーがあります！">'+
+                                                        "{{ object|yesno:'更新,投稿' }}"+
+                                                        "</button>"
+    }
+    else{
+        document.getElementById("error_area_" + result_id + "_length").innerHTML = "";
+        document.getElementById("confirm").innerHTML = '<button type="submit" class="submit btn btn-primary w-125px h-34px rounded-pill">'+
+                                                        "{{ object|yesno:'更新,投稿' }}"+
+                                                        "</button>";
+    }
+}
+
+</script>
 {% endblock %}

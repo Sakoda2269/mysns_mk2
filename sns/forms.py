@@ -19,6 +19,9 @@ class CreatePost(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['title'].widget.attrs = {'placeholder': 'title', 'class': 'form-control'}
-        self.fields['detail'].widget.attrs = {'placeholder': 'detail',  'class': 'form-control', 'rows': '10'}
+        self.fields['title'].widget.attrs = {'placeholder': 'title', 'class': 'form-control',
+                                              'onkeyup': f'ShowLength(value, "title", {Post._meta.get_field("title").max_length});'}
+        self.fields['detail'].widget.attrs = {'placeholder': 'detail',  'class': 'form-control', 
+                                              'rows': '10', 
+                                              'onkeyup': f'ShowLength(value, "detail", {Post._meta.get_field("detail").max_length});'}
     
