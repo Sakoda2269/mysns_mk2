@@ -19,7 +19,6 @@ def user_detail(request, id):
     post = Post.objects.filter(author=user)
     following_num = Follower.objects.filter(following=user).count()
     followed_num = Follower.objects.filter(followed=user).count()
-    print(followed_num, following_num)
     if request.user.is_anonymous:
         context = {
             "userDetail":user,
@@ -74,3 +73,19 @@ def ajax_follow(request):
     followed_num = Follower.objects.filter(followed=followed_user).count()
     context["num"] = followed_num
     return JsonResponse(context)
+
+
+def follower_list(request, id, follow_type):
+    user = get_object_or_404(CustomUser, id=id)
+    context = {}
+    context["followers"] = []
+    if follow_type=="following":
+        for follower in Follower.objects.filter(following=user):
+            context["followers"].append(follower.followed)
+        context["method"]=follow_type
+    elif follow_type=="followed":
+        for follower in Follower.objects.filter(followed=user):
+            context["followers"].append(follower.following)
+        context["method"]=follow_type
+    return render(request, "accounts/followerList.html", context)
+

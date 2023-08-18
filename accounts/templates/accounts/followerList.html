@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block extra_style %}
+<style>
+    .notlink{
+        text-decoration:none !important;
+        color:black !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+    <br>
+    <h5>
+        {% if method == "following" %}
+            フォロー中
+        {% else %}
+            フォロワー 
+        {% endif %}
+    </h5>
+    <hr width="100%" color="#ddd">
+    {% for follower in followers %}
+        <p style="padding-left:1rem;">
+            <a href="{% url 'accounts:user' follower.id %}" class="notlink">
+                {{ follower }}
+            </a> -
+            <a href="{% url 'accounts:user' follower.id %}" class="notlink">
+                @{{ follower.usertag }}
+            </a>
+        </p>
+    {% endfor %}
+{% endblock %}

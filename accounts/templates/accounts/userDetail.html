@@ -8,6 +8,11 @@
         .h-40px {
             height: 34px !important;
         }
+        .notlink{
+            text-decoration:none !important;
+            color:black !important;
+
+        }
     </style>
 {% endblock %}
 
@@ -16,8 +21,12 @@
         {{ userDetail.username }} 
         
     </h1>
+    <a href="{% url 'accounts:follower' userDetail.id 'following' %}" class="notlink">
         フォロ-:{{ following_num }}
+    </a>
+    <a href="{% url 'accounts:follower' userDetail.id 'followed' %}" class="notlink">
         フォロワー:<div style="display:inline;" class="num">{{ followed_num }}</div>
+    </a>
     <p>
         {% if user.id == userDetail.id %}
             @{{ userDetail.usertag }}

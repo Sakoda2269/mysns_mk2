@@ -10,5 +10,5 @@ urlpatterns = [
     path("user/<str:id>/", views.user_detail, name="user"),
     path("follow/<str:followed_id>/", views.follow, name="follow"),
     path("ajax_follow/", views.ajax_follow, name="ajax_follow"),
-    
+    path("follower/<str:id>/<str:follow_type>", views.follower_list, name="follower"),
 ]
