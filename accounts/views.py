@@ -3,7 +3,7 @@ from django.views import generic
 from django.urls import reverse_lazy
 from .forms import SignUpForm
 from .models import CustomUser, Follower
-from sns.models import Post
+from sns.models import Post, Good
 from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
 
@@ -33,6 +33,10 @@ def user_detail(request, id):
         button_class = "btn-warning"
     else :
         button_class = "btn-primary"
+    good = Good.objects.filter(gooder=request.user)
+    goods = set()
+    for g in good:
+        goods.add(g.post.id)
     context = {
         "userDetail":user,
         "posts":post,
@@ -40,6 +44,7 @@ def user_detail(request, id):
         "btn_class":button_class,
         "following_num":following_num,
         "followed_num":followed_num,
+        "goods": goods
     }
     return render(request, "accounts/userDetail.html", context)
 

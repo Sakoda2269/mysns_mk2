@@ -19,10 +19,10 @@ class IndexView(generic.ListView):
         if self.request.user.is_anonymous:
             return context
         good = Good.objects.filter(gooder=self.request.user)
-        tmp = set()
+        goods = set()
         for g in good:
-            tmp.add(g.post.id)
-        context["goods"] = tmp
+            goods.add(g.post.id)
+        context["goods"] = goods
         return context  
     
 
