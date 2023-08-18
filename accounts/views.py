@@ -17,11 +17,16 @@ class SignUpView(generic.CreateView):
 def user_detail(request, id):
     user = get_object_or_404(CustomUser, pk=id)
     post = Post.objects.filter(author=user)
+    following_num = Follower.objects.filter(following=user).count()
+    followed_num = Follower.objects.filter(followed=user).count()
+    print(followed_num, following_num)
     if request.user.is_anonymous:
         context = {
             "userDetail":user,
             "posts":post,
             "following":False,
+            "following_num":following_num,
+            "followed_num":followed_num,
         }
         return render(request, "accounts/userDetail.html", context)
     following = Follower.objects.filter(followed=user, following=request.user).exists()
@@ -34,6 +39,8 @@ def user_detail(request, id):
         "posts":post,
         "following":following,
         "btn_class":button_class,
+        "following_num":following_num,
+        "followed_num":followed_num,
     }
     return render(request, "accounts/userDetail.html", context)
 
@@ -64,4 +71,6 @@ def ajax_follow(request):
     else:
         Follower.objects.create(following=following_user, followed=followed_user)
         context["method"] = "follow"
+    followed_num = Follower.objects.filter(followed=followed_user).count()
+    context["num"] = followed_num
     return JsonResponse(context)

@@ -12,9 +12,12 @@
 {% endblock %}
 
 {% block content %}
-    <h1>
+    <h1 style="display:inline;">
         {{ userDetail.username }} 
+        
     </h1>
+        フォロ-:{{ following_num }}
+        フォロワー:<div style="display:inline;" class="num">{{ followed_num }}</div>
     <p>
         {% if user.id == userDetail.id %}
             @{{ userDetail.usertag }}
