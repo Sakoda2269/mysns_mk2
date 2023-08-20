@@ -2,6 +2,7 @@ from typing import Any, Dict
 from django.db.models.query import QuerySet
 from django.views import generic
 from .models import Post, Good
+from accounts.models import Follower
 from .forms import CreatePost
 from django.urls import reverse_lazy
 from django.forms.models import BaseModelForm
@@ -22,7 +23,12 @@ class IndexView(generic.ListView):
         goods = set()
         for g in good:
             goods.add(g.post.id)
+        follower = Follower.objects.filter(following=self.request.user)
+        follows = set()
+        for f in follower:
+            follows.add(f.followed)
         context["goods"] = goods
+        context["following"] = follows
         return context  
     
 

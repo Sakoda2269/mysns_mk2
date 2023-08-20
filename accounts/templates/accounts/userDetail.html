@@ -138,7 +138,10 @@
             'data': {
                 'followed_user_id': '{{ userDetail.id }}',
             },
-            'dataType': 'json'
+            'dataType': 'json',
+            'headers': {
+                'X-CSRF-TOKEN':$('meta[name="csrf-token"]').attr('content'),
+            }
         })
         .done(function(response){
             if (response.method == "follow"){
