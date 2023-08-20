@@ -178,7 +178,7 @@
                                 <button onClick="location.href='{% url 'sns:good' post.id 1 %}'" class="good on-a">♡</button>
                             {% else %}
                                 <button onClick="on_good('{{ post.id }}')" class="good on-a" >
-                                    <div id="{{ post.id }}" style="display:inline;">
+                                    <div id="{{ post.id }}_good" style="display:inline;">
                                         {% if post.id in goods %}
                                             <i class="fa-solid fa-heart" style="color: #ff0000;"></i>
                                         {% else %}
@@ -188,7 +188,7 @@
                                 </button>
                             {% endif %}
                             <font size="4">
-                                <div id="num_{{ post.id }}" style="display:inline;">:{{ post.good_num }}イイね</div> 
+                                <div id="num_{{ post.id }}_good" style="display:inline;">:{{ post.good_num }}イイね</div> 
                             </font>
                         </div>
                     </a>
@@ -247,15 +247,31 @@ function on_good(post_id){
     }).then(response  => {
         return response.json();
     }).then(response => {
-        document.getElementById('num_' + String(post_id)).textContent = ":" + String(response.num) + "イイね";
-        if(response.method == "create"){
-            document.getElementById(String(post_id)).innerHTML = '<i class="fa-solid fa-heart fa-beat" style="color: #ff0000;"></i>';
-            id = window.setTimeout(function(){
-                document.getElementById(String(post_id)).innerHTML = '<i class="fa-solid fa-heart" style="color: #ff0000;"></i>';
-            }, 1000);
-        }else{
-            document.getElementById(String(post_id)).innerHTML = '<i class="fa-solid fa-heart"></i>';
-            window.clearTimeout(id);
+        try{
+            document.getElementById('num_' + String(post_id)).textContent = ":" + String(response.num) + "イイね";
+            if(response.method == "create"){
+                document.getElementById(String(post_id)).innerHTML = '<i class="fa-solid fa-heart fa-beat" style="color: #ff0000;"></i>';
+                id = window.setTimeout(function(){
+                    document.getElementById(String(post_id)).innerHTML = '<i class="fa-solid fa-heart" style="color: #ff0000;"></i>';
+                }, 1000);
+            }else{
+                document.getElementById(String(post_id)).innerHTML = '<i class="fa-solid fa-heart"></i>';
+                 window.clearTimeout(id);
+            }
+        }catch(e){
+        }
+        try{
+            document.getElementById('num_' + String(post_id) + "_good").textContent = ":" + String(response.num) + "イイね";
+            if(response.method == "create"){
+                document.getElementById(String(post_id) + "_good").innerHTML = '<i class="fa-solid fa-heart fa-beat" style="color: #ff0000;"></i>';
+                id = window.setTimeout(function(){
+                    document.getElementById(String(post_id) + "_good").innerHTML = '<i class="fa-solid fa-heart" style="color: #ff0000;"></i>';
+                }, 1000);
+            }else{
+                document.getElementById(String(post_id) + "_good").innerHTML = '<i class="fa-solid fa-heart"></i>';
+                window.clearTimeout(id);
+            }
+        }catch(e){
         }
     }).catch(error => {
         console.log(error);
