@@ -30,23 +30,33 @@
         position: relative;
         z-index: 1;
     }
+    .tab-hov:hover{
+        background: #ddd;
+    }
+    .nav-pills .nav-link.active{
+        background-color: #ccf;
+        color: black;
+    }
 </style>
 {% endblock %}
 
 {% block content %}
-<h1>タイムライン</h1><br><br>
-<ul class="nav nav-tabs nav-fill" role="tablist">
-    <li class="nav-item">
-        <a class="nav-link active" id="item1-tab" data-toggle="tab" href="#item1" role="tab" aria-controls="item1" aria-selected="true">全体</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" id="item2-tab" data-toggle="tab" href="#item2" role="tab" aria-controls="item2" aria-selected="false">フォロー中</a>
-    </li>
-</ul>
-
+<h1>タイムライン</h1><br>
+<div class="row-1" style="position: sticky;top: 55px;z-index:2;background-color:#fff;">
+    <br>
+    <ul class="nav nav-tabs nav-fill nav-pills" role="tablist">
+        <li class="nav-item tab-hov">
+            <a class="nav-link active" id="item1-tab" data-toggle="tab" href="#item1" role="tab" aria-controls="item1" aria-selected="true">全体</a>
+        </li>
+        <li class="nav-item tab-hov">
+            <a class="nav-link" id="item2-tab" data-toggle="tab" href="#item2" role="tab" aria-controls="item2" aria-selected="false">フォロー中</a>
+        </li>
+    </ul>
+    <hr size="10" width="100%" color="black">
+    <br>
+</div>
 <div class="tab-content">
     <div class="tab-pane fade show active" id="item1" role="tabpanel" aria-labelledby="item1-tab">
-
         {% for post in object_list reversed %}
             <h6>
                 <a href='{% url "accounts:user" post.author.pk%}'>
