@@ -106,4 +106,16 @@ def ajax_good(request):
         context["method"] = "create"
     context["num"] = str(post.good_num)
     return JsonResponse(context)
+
+
+def good_user(request, id):
+    post = get_object_or_404(Post, id=id)
+    good_user = Good.objects.filter(post=post)
+    good_users = []
+    for g in good_user:
+        good_users.append(g.gooder)
+    context = {
+        "gooders":good_users
+    }
+    return render(request, "sns/good_user.html", context)
     

@@ -13,4 +13,5 @@ urlpatterns = [
     path("delete/<str:pk>/", views.DeleteView.as_view(), name="delete"),
     path("good/<str:post_id>/<int:isList>/", views.good, name="good"),
     path("ajaxgood/", views.ajax_good, name="ajaxgood"),
+    path("good_user/<str:id>/", views.good_user, name="good_user"),
 ]

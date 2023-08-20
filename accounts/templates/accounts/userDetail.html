@@ -63,7 +63,16 @@
         フォロワー:<div style="display:inline;" class="num">{{ followed_num }}</div>
     </a>
     <p>
-        {% if user.id == userDetail.id %}
+        {% if request.user.is_anonymous %}
+            @{{ userDetail.usertag }} 
+            <br>
+            <br>
+            <button type="button" class="btn btn-primary w-120px h-40px rounded-pill" 
+                onClick="location.href='{% url 'accounts:follow' userDetail.id %}'">
+                    フォロー
+            </button>
+            <br>
+        {% elif user.id == userDetail.id %}
             @{{ userDetail.usertag }}
         {% else %}
             <div class="following">
@@ -132,7 +141,9 @@
                         </div>
                         <div class="card-footer h-50px text-right">
                             {% if request.user.is_anonymous %}
-                                <button onClick="location.href='{% url 'sns:good' post.id 1 %}'" class="good on-a">♡</button>
+                                <button onClick="location.href='{% url 'sns:good' post.id 1 %}'" class="good on-a">
+                                    <i class="fa-regular fa-heart"></i>
+                                </button>
                             {% else %}
                                 <button onClick="on_good('{{ post.id }}')" class="good on-a" >
                                     <div id="{{ post.id }}" style="display:inline;">
@@ -145,7 +156,9 @@
                                 </button>
                             {% endif %}
                             <font size="4">
-                                <div id="num_{{ post.id }}" style="display:inline;">:{{ post.good_num }}イイね</div> 
+                                <a href="{% url 'sns:good_user' post.id %}" class="notlink on-a">
+                                    <div id="num_{{ post.id }}" style="display:inline;">:{{ post.good_num }}イイね</div> 
+                                </a>
                             </font>
                         </div>
                     </a>
@@ -189,6 +202,7 @@
 
     $(document).ready(function(){
         $("#item2-tab").on('click', function() {
+            console.log("aaa");
             $("#item2").load('{% url "accounts:ajax_good_tab" userDetail.id %}', function(){});
         });
     });
@@ -197,7 +211,7 @@
 {% block extrajs %}
 <script type="text/javascript">
 
-let id;
+let myid;
 
 function on_good(post_id){
     console.log(post_id);
@@ -216,12 +230,12 @@ function on_good(post_id){
             document.getElementById('num_' + String(post_id)).textContent = ":" + String(response.num) + "イイね";
             if(response.method == "create"){
                 document.getElementById(String(post_id)).innerHTML = '<i class="fa-solid fa-heart fa-beat" style="color: #ff0000;"></i>';
-                id = window.setTimeout(function(){
+                myid = window.setTimeout(function(){
                     document.getElementById(String(post_id)).innerHTML = '<i class="fa-solid fa-heart" style="color: #ff0000;"></i>';
                 }, 1000);
             }else{
                 document.getElementById(String(post_id)).innerHTML = '<i class="fa-solid fa-heart"></i>';
-                 window.clearTimeout(id);
+                 window.clearTimeout(myid);
             }
         }catch(e){
         }
@@ -229,12 +243,12 @@ function on_good(post_id){
             document.getElementById('num_' + String(post_id) + "_good").textContent = ":" + String(response.num) + "イイね";
             if(response.method == "create"){
                 document.getElementById(String(post_id) + "_good").innerHTML = '<i class="fa-solid fa-heart fa-beat" style="color: #ff0000;"></i>';
-                id = window.setTimeout(function(){
+                myid = window.setTimeout(function(){
                     document.getElementById(String(post_id) + "_good").innerHTML = '<i class="fa-solid fa-heart" style="color: #ff0000;"></i>';
                 }, 1000);
             }else{
                 document.getElementById(String(post_id) + "_good").innerHTML = '<i class="fa-solid fa-heart"></i>';
-                window.clearTimeout(id);
+                window.clearTimeout(myid);
             }
         }catch(e){
         }

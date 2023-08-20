@@ -30,6 +30,7 @@ def user_detail(request, id):
     for g in gooding:
         good_posts.append(g.post)
     context["good_posts"] = good_posts
+    context["btn_class"] = "btn-primary"
 
     if request.user.is_anonymous:
         return render(request, "accounts/userDetail.html", context)
@@ -112,9 +113,10 @@ def ajax_goodtab(request, id):
         good_posts.append(g.post)
     context["good_posts"] = good_posts
     context["goods"] = set()
+    context["btn_class"] = "btn-primary"
 
     if request.user.is_anonymous:
-        return render(request, "accounts/userDetail.html", context)
+        return render(request, "accounts/goodTab.html", context)
     
     following = Follower.objects.filter(followed=user, following=request.user).exists()
     context["following"] = following

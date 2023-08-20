@@ -37,6 +37,10 @@
         background-color: #ccf;
         color: black;
     }
+    .notlink{
+        text-decoration:none !important;
+        color:black !important;
+    }
 </style>
 {% endblock %}
 
@@ -84,7 +88,9 @@
                     </div>
                     <div class="card-footer h-50px text-right">
                         {% if request.user.is_anonymous %}
-                            <button onClick="location.href='{% url 'sns:good' post.id 1 %}'" class="good on-a">♡</button>
+                            <button onClick="location.href='{% url 'sns:good' post.id 1 %}'" class="good on-a">
+                                <i class="fa-regular fa-heart"></i>
+                            </button>
                         {% else %}
                             <button onClick="on_good('{{ post.id }}')" class="good on-a" >
                                 <div id="{{ post.id }}" style="display:inline;">
@@ -97,7 +103,9 @@
                             </button>
                         {% endif %}
                         <font size="4">
-                            <div id="num_{{ post.id }}" style="display:inline;">:{{ post.good_num }}イイね</div> 
+                            <a href="{% url 'sns:good_user' post.id %}" class="notlink on-a">
+                                <div id="num_{{ post.id }}" style="display:inline;">:{{ post.good_num }}イイね</div> 
+                            </a>
                         </font>
                     </div>
                 </a>
@@ -106,55 +114,79 @@
         {% endfor %}
     </div>
     <div class="tab-pane fade" id="item2" role="tabpanel" aria-labelledby="item2-tab">
-        {% for post in object_list reversed %}
-            {% if post.author in following  or post.author == user %}
-                <h6>
-                    <a href='{% url "accounts:user" post.author.pk%}'>
-                        {{ post.author }}
-                    </a>
-                </h6>
-                <div class="card w-150px center-block" style="position:relative;">
-                    <a href="{% url 'sns:post' post.pk %}" style="position:absolute;inset:0;">
-                        <div class="card-header bg-secondary h-50px">
-                            <h5 style="text-align:left;float:left;">
-                                <a href='{% url "sns:post" post.pk %}' class="on-a title-link">
-                                    {{ post.title }} 
-                                </a>
-                            </h5>
-                            <p style="text-align:right">
-                                <font color="white">
-                                    {{ post.created_at }}
-                                </font>
-                            </p>
-                        </div>
-                        <div class="card-body detail">
-                            <p class="card-text">
-                                {{ post.detail | linebreaks }}
-                            </p>
-                        </div>
-                        <div class="card-footer h-50px text-right">
-                            {% if request.user.is_anonymous %}
-                                <button onClick="location.href='{% url 'sns:good' post.id 1 %}'" class="good on-a">♡</button>
-                            {% else %}
-                                <button onClick="on_good('{{ post.id }}')" class="good on-a" >
-                                    <div id="{{ post.id }}" style="display:inline;">
-                                        {% if post.id in goods %}
-                                            <i class="fa-solid fa-heart" style="color: #ff0000;"></i>
-                                        {% else %}
-                                            <i class="fa-regular fa-heart"></i>
-                                        {% endif %}
-                                    </div>
-                                </button>
-                            {% endif %}
-                            <font size="4">
-                                <div id="num_{{ post.id }}" style="display:inline;">:{{ post.good_num }}イイね</div> 
-                            </font>
-                        </div>
-                    </a>
-                </div>
+        {% if user.is_anonymous %}
+            <br>
+            <div style="text-align:center;">
+                <h4 >
+                    ログインしてSNSをより楽しみましょう！
+                </h4>
                 <br>
-            {% endif %}
-        {% endfor %}
+                <button class="btn btn-primary mx-auto" onClick="location.href='/accounts/login/'"
+                    style="text-align:center; width: 130px !important; height: 40px !important;">ログイン</button>
+                <br>
+                <br>
+                <br>
+                <a href="{% url 'accounts:signup' %}">
+                    またはアカウントを作成
+                </a>
+            </div>
+        {% else %}
+            {% for post in object_list reversed %}
+                {% if post.author in following  or post.author == user %}
+                    <h6>
+                        <a href='{% url "accounts:user" post.author.pk%}'>
+                            {{ post.author }}
+                        </a>
+                    </h6>
+                    <div class="card w-150px center-block" style="position:relative;">
+                        <a href="{% url 'sns:post' post.pk %}" style="position:absolute;inset:0;">
+                            <div class="card-header bg-secondary h-50px">
+                                <h5 style="text-align:left;float:left;">
+                                    <a href='{% url "sns:post" post.pk %}' class="on-a title-link">
+                                        {{ post.title }} 
+                                    </a>
+                                </h5>
+                                <p style="text-align:right">
+                                    <font color="white">
+                                        {{ post.created_at }}
+                                    </font>
+                                </p>
+                            </div>
+                            <div class="card-body detail">
+                                <p class="card-text">
+                                    {{ post.detail | linebreaks }}
+                                </p>
+                            </div>
+                            <div class="card-footer h-50px text-right">
+                                {% if request.user.is_anonymous %}
+                                    <button onClick="location.href='{% url 'sns:good' post.id 1 %}'" class="good on-a">
+                                        <i class="fa-regular fa-heart"></i>
+                                    </button>
+                                {% else %}
+                                    <button onClick="on_good('{{ post.id }}')" class="good on-a" >
+                                        <div id="{{ post.id }}" style="display:inline;">
+                                            {% if post.id in goods %}
+                                                <i class="fa-solid fa-heart" style="color: #ff0000;"></i>
+                                            {% else %}
+                                                <i class="fa-regular fa-heart"></i>
+                                            {% endif %}
+                                        </div>
+                                    </button>
+                                {% endif %}
+                                <font size="4">
+                                    <a href="{% url 'sns:good_user' post.id %}" class="notlink on-a">
+                                        <div id="num_{{ post.id }}" style="display:inline;">:{{ post.good_num }}
+                                            イイね
+                                        </div> 
+                                    </a>
+                                </font>
+                            </div>
+                        </a>
+                    </div>
+                    <br>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
     </div>
 </div>
 
@@ -192,6 +224,7 @@ function on_good(post_id){
         return response.json();
     }).then(response => {
         document.getElementById('num_' + String(post_id)).textContent = ":" + String(response.num) + "イイね";
+        
         if(response.method == "create"){
             document.getElementById(String(post_id)).innerHTML = '<i class="fa-solid fa-heart fa-beat" style="color: #ff0000;"></i>';
             id = window.setTimeout(function(){

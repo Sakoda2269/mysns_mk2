@@ -26,7 +26,9 @@
                 </div>
                 <div class="card-footer h-50px text-right">
                     {% if request.user.is_anonymous %}
-                        <button onClick="location.href='{% url 'sns:good' post.id 1 %}'" class="good on-a">♡</button>
+                        <button onClick="location.href='{% url 'sns:good' post.id 1 %}'" class="good on-a">
+                            <i class="fa-regular fa-heart"></i>
+                        </button>
                     {% else %}
                         <button onClick="on_good('{{ post.id }}')" class="good on-a" >
                             <div id="{{ post.id }}_good" style="display:inline;">
@@ -39,7 +41,9 @@
                         </button>
                     {% endif %}
                     <font size="4">
-                        <div id="num_{{ post.id }}_good" style="display:inline;">:{{ post.good_num }}イイね</div> 
+                        <a href="{% url 'sns:good_user' post.id %}" class="notlink on-a">
+                            <div id="num_{{ post.id }}_good" style="display:inline;">:{{ post.good_num }}イイね</div> 
+                        </a>
                     </font>
                 </div>
             </a>

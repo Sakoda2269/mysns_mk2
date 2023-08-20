@@ -13,6 +13,10 @@
     .h-34px {
         height: 34px !important;
     }
+    .notlink{
+        text-decoration:none !important;
+        color:black !important;
+    }
     </style>
 {% endblock %}
 
@@ -29,7 +33,9 @@
     </div>
     <p style="margin-left:150px">
         {% if request.user.is_anonymous %}
-            <button onClick="location.href='{% url 'sns:good' post.id 0 %}'" class="good">♡</button>
+            <button onClick="location.href='{% url 'sns:good' post.id 0 %}'" class="good">
+                <i class="fa-regular fa-heart"></i>
+            </button>
         {% else %}
             <button id="ajax-good" class="good">
                 <div class="result">
@@ -41,7 +47,9 @@
                 </div>
             </button>
         {% endif %}
+        <a href="{% url 'sns:good_user' post.id %}" class="notlink">
         : <span class="num">{{ post.good_num }}</span> イイね
+        </a>
     </p>
     <br>
     <br>
