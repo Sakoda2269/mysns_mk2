@@ -94,3 +94,39 @@ def follower_list(request, id, follow_type):
         context["method"]=follow_type
     return render(request, "accounts/followerList.html", context)
 
+
+def ajax_goodtab(request, id):
+    context = {}
+    user = get_object_or_404(CustomUser, pk=id)
+    post = Post.objects.filter(author=user)
+    following_num = Follower.objects.filter(following=user).count()
+    followed_num = Follower.objects.filter(followed=user).count()
+    context["userDetail"] = user
+    context["posts"] = post
+    context["following"] = False
+    context["following_num"] = following_num
+    context["followed_num"] = followed_num
+    good_posts = []
+    gooding = Good.objects.filter(gooder=user)
+    for g in gooding:
+        good_posts.append(g.post)
+    context["good_posts"] = good_posts
+    context["goods"] = set()
+
+    if request.user.is_anonymous:
+        return render(request, "accounts/userDetail.html", context)
+    
+    following = Follower.objects.filter(followed=user, following=request.user).exists()
+    context["following"] = following
+    if following:
+        button_class = "btn-warning"
+    else :
+        button_class = "btn-primary"
+    context["btn_class"] = button_class
+    good = Good.objects.filter(gooder=request.user)
+    goods = set()
+    for g in good:
+        goods.add(g.post.id)
+    context["goods"] = goods
+    return render(request, "accounts/goodTab.html", context)
+

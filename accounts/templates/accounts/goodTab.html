@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+</head>
+<body>
+<style>
+    .detail {
+        margin-left:1rem;
+    }
+    .title-link, .title-link:hover{
+        color:white;
+    }
+    .good, .good:focus, .good:hover {
+        border: none;
+        outline: none;
+        background: none;
+        display: inline;
+    }
+    .w-60px {
+            width: 60px !important;
+    }
+    .w-150px {
+        width: 100% !important;
+    }
+    .h-50px{
+        height: 50px !important;
+    }
+    .h-60px {
+        height: 60px !important;
+    }
+    .on-a{
+        position: relative;
+        z-index: 1;
+    }
+    .w-120px {
+        width: 125px !important;
+    }
+    .h-40px {
+        height: 34px !important;
+    }
+    .notlink{
+        text-decoration:none !important;
+        color:black !important;
+    }
+</style>
+<div>
+    {% for post in good_posts reversed %}
+        <h6>
+            <a href='{% url "accounts:user" post.author.pk%}'>
+                {{ post.author }}
+            </a>
+        </h6>
+        <div class="card w-150px center-block" style="position:relative;">
+            <a href="{% url 'sns:post' post.pk %}" style="position:absolute;inset:0;">
+                <div class="card-header bg-secondary h-50px">
+                    <h5 style="text-align:left;float:left;">
+                        <a href='{% url "sns:post" post.pk %}' class="on-a title-link">
+                            {{ post.title }} 
+                        </a>
+                    </h5>
+                    <p style="text-align:right">
+                        <font color="white">
+                            {{ post.created_at }}
+                        </font>
+                    </p>
+                </div>
+                <div class="card-body detail">
+                    <p class="card-text">
+                        {{ post.detail | linebreaks }}
+                    </p>
+                </div>
+                <div class="card-footer h-50px text-right">
+                    {% if request.user.is_anonymous %}
+                        <button onClick="location.href='{% url 'sns:good' post.id 1 %}'" class="good on-a">♡</button>
+                    {% else %}
+                        <button onClick="on_good('{{ post.id }}')" class="good on-a" >
+                            <div id="{{ post.id }}_good" style="display:inline;">
+                                {% if post.id in goods %}
+                                    <i class="fa-solid fa-heart" style="color: #ff0000;"></i>
+                                {% else %}
+                                    <i class="fa-regular fa-heart"></i>
+                                {% endif %}
+                            </div>
+                        </button>
+                    {% endif %}
+                    <font size="4">
+                        <div id="num_{{ post.id }}_good" style="display:inline;">:{{ post.good_num }}イイね</div> 
+                    </font>
+                </div>
+            </a>
+        </div>
+    {% endfor %}
+</div>
+</body>
+</html>
