@@ -2,7 +2,7 @@
 {% block extra_style %}
 <style>
     .detail {
-        margin-left:1rem;
+        padding-left:1rem;
     }
     .notlink{
         text-decoration:none !important;
@@ -15,10 +15,11 @@
 
     <div>
         <h3>イイねしたユーザー</h3>
+        <hr width="100%" color="black">
         <br>
         {% for gooder in gooders %}
         <a href="{% url 'accounts:user' gooder.id %}" class="notlink">
-            <h5 class="detail">{{ gooder.username }} -- @{{ gooder.usertag}}</h5>
+            <h6 class="detail">{{ gooder.username }} -- @{{ gooder.usertag}}</h6>
         </a>
         {% endfor %}
     </div>
