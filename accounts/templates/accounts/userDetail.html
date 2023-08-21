@@ -36,6 +36,19 @@
         .h-40px {
             height: 34px !important;
         }
+        .wh-30px{
+            width: 40px !important;
+            height: 40px !important;
+            border-radius:50%;
+        }
+        .wh-30px:hover{
+            background: #ccc;
+            border-radius:50%;
+        }
+        .wh-30px:focus{
+            background: #aaa;
+            border-radius:50%;
+        }
         .notlink{
             text-decoration:none !important;
             color:black !important;
@@ -52,21 +65,33 @@
 
 {% block content %}
     <br>
-    <h1 style="display:inline;">
-        {{ userDetail.username }} 
-        
-    </h1>
-    <a href="{% url 'accounts:follower' userDetail.id 'following' %}" class="notlink">
-        フォロ-:{{ following_num }}
-    </a>
-    <a href="{% url 'accounts:follower' userDetail.id 'followed' %}" class="notlink">
-        フォロワー:<div style="display:inline;" class="num">{{ followed_num }}</div>
-    </a>
+    <div>
+        <h1 style="display:inline;">
+            {{ userDetail.username }} 
+            
+        </h1>
+        <a href="{% url 'accounts:follower' userDetail.id 'following' %}" class="notlink">
+            フォロ-:{{ following_num }}
+        </a>
+        <a href="{% url 'accounts:follower' userDetail.id 'followed' %}" class="notlink">
+            フォロワー:<div style="display:inline;" class="num">{{ followed_num }}</div>
+        </a>
+        {% if user != userDetail %}
+            <div class="dropdown">
+                <button class="wh-30px float-right dropdown-toggle" type="button"
+                    id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fa-solid fa-ellipsis-vertical"></i>
+                </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <a class="dropdown-item" href="#" style="color:red">ブロック</a>
+                        <a class="dropdown-item" href="#" style="color:orange">ミュート</a>
+                    </div>
+            </div>
+        {% endif %}
+    </div>
     <p>
         {% if request.user.is_anonymous %}
             @{{ userDetail.usertag }} 
-            <br>
-            <br>
             <button type="button" class="btn btn-primary w-120px h-40px rounded-pill" 
                 onClick="location.href='{% url 'accounts:follow' userDetail.id %}'">
                     フォロー
@@ -75,14 +100,13 @@
         {% elif user.id == userDetail.id %}
             @{{ userDetail.usertag }}
         {% else %}
-            <div class="following">
+            <div class="following" style="display:inline;">
                 @{{ userDetail.usertag }} 
                 {% if following %}
                     --フォロー中
                 {% endif %}
             </div>
-            <br>
-            <button type="button" class="btn {{ btn_class }} w-120px h-40px rounded-pill" id="ajax_follow">
+            <button type="button" class="btn {{ btn_class }} w-120px h-40px rounded-pill" id="ajax_follow" style="display:inline;">
                 <div class="result">
                     {% if following %}
                         フォロー解除
@@ -91,7 +115,6 @@
                     {% endif %}
                 </div>
             </button>
-            <br>
             <br>
         {% endif %}
     </p>
