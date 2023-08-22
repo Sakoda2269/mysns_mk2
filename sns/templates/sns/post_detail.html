@@ -21,45 +21,55 @@
 {% endblock %}
 
 {% block content %}
-<div>
-    <h1>{{ post.title }}</h1>
-    -
-    <a href='{% url "accounts:user" post.author.id %}'>
-        {{ post.author }}
-    </a>
     <div>
-        {{ post.created_at }}<br><br>
-        {{ post.detail | linebreaks }}
-    </div>
-    <p style="margin-left:150px">
-        {% if request.user.is_anonymous %}
-            <button onClick="location.href='{% url 'sns:good' post.id 0 %}'" class="good">
-                <i class="fa-regular fa-heart"></i>
-            </button>
+        {% if is_block %}
+            <br>
+            <br>
+            <h1 style="color:red; text-align:center;">ブロック中のユーザーの投稿<h1>
+        {% elif is_blocked %}
+            <br>
+            <br>
+            <h4 style="text-align:center;">この投稿をしたユーザーは投稿の公開を制限しています<h4>
         {% else %}
-            <button id="ajax-good" class="good">
-                <div class="result">
-                    {% if goods %}
-                        <i class="fa-solid fa-heart" style="color: #ff0000;"></i>
-                    {% else %}
+            <h1>{{ post.title }}</h1>
+            -
+            <a href='{% url "accounts:user" post.author.id %}'>
+                {{ post.author }}
+            </a>
+            <div>
+                {{ post.created_at }}<br><br>
+                {{ post.detail | linebreaks }}
+            </div>
+            <p style="margin-left:150px">
+                {% if request.user.is_anonymous %}
+                    <button onClick="location.href='{% url 'sns:good' post.id 0 %}'" class="good">
                         <i class="fa-regular fa-heart"></i>
-                    {% endif %}
+                    </button>
+                {% else %}
+                    <button id="ajax-good" class="good">
+                        <div class="result">
+                            {% if goods %}
+                                <i class="fa-solid fa-heart" style="color: #ff0000;"></i>
+                            {% else %}
+                                <i class="fa-regular fa-heart"></i>
+                            {% endif %}
+                        </div>
+                    </button>
+                {% endif %}
+                <a href="{% url 'sns:good_user' post.id %}" class="notlink">
+                : <span class="num">{{ post.good_num }}</span> イイね
+                </a>
+            </p>
+            <br>
+            <br>
+            {% if request.user.id == object.author_id %}
+                <div>
+                    <button onClick="location.href='{% url 'sns:update' post.pk %}'" class="btn btn-success rounded-pill w-125px h-34px">編集</button>
+                    <button onClick="location.href='{% url 'sns:delete' post.pk %}'" class="btn btn-danger rounded-pill w-125px h-34px">削除</button>
                 </div>
-            </button>
+            {% endif %}
         {% endif %}
-        <a href="{% url 'sns:good_user' post.id %}" class="notlink">
-        : <span class="num">{{ post.good_num }}</span> イイね
-        </a>
-    </p>
-    <br>
-    <br>
-    {% if request.user.id == object.author_id %}
-        <div>
-            <button onClick="location.href='{% url 'sns:update' post.pk %}'" class="btn btn-success rounded-pill w-125px h-34px">編集</button>
-            <button onClick="location.href='{% url 'sns:delete' post.pk %}'" class="btn btn-danger rounded-pill w-125px h-34px">削除</button>
-        </div>
-    {% endif %}
-</div>
+    </div>
 {% endblock %}
 
 {% block extra_ajax %}

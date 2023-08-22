@@ -69,140 +69,158 @@
 {% block content %}
     <br>
     <div>
-        <h1 style="display:inline;">
-            {{ userDetail.username }} 
-            
-        </h1>
-        <a href="{% url 'accounts:follower' userDetail.id 'following' %}" class="notlink">
-            フォロ-:{{ following_num }}
-        </a>
-        <a href="{% url 'accounts:follower' userDetail.id 'followed' %}" class="notlink">
-            フォロワー:<div style="display:inline;" class="num">{{ followed_num }}</div>
-        </a>
-        {% if user.is_anonymous %}
-        {% elif user != userDetail %}
-            <div class="dropdown">
-                <button class="wh-30px float-right dropdown-toggle" type="button"
-                    id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i class="fa-solid fa-ellipsis-vertical"></i>
-                </button>
-                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                        {% if is_block %}
-                            <a class="dropdown-item block" href="{% url 'accounts:block' userDetail.id %}" style="color:red">ブロック解除</a>
-                        {% else %}
-                            <a class="dropdown-item block" href="{% url 'accounts:block' userDetail.id %}" style="color:red">ブロック</a>
-                        {% endif %}
-                        {% if is_mute %}
-                            <a class="dropdown-item block" href="{% url 'accounts:mute' userDetail.id %}" style="color:orange">ミュート解除</a>
-                        {% else %}
-                            <a class="dropdown-item block" href="{% url 'accounts:mute' userDetail.id %}" style="color:orange">ミュート</a> 
-                        {% endif %}
-                    </div>
-            </div>
-        {% endif %}
-    </div>
-    <p>
-        {% if request.user.is_anonymous %}
-            @{{ userDetail.usertag }} 
-            <button type="button" class="btn btn-primary w-120px h-40px rounded-pill" 
-                onClick="location.href='{% url 'accounts:follow' userDetail.id %}'">
-                    フォロー
-            </button>
-            <br>
-        {% elif user.id == userDetail.id %}
-            @{{ userDetail.usertag }}
-        {% else %}
-            <div class="following" style="display:inline;">
+        <div>
+            <h1 style="display:inline;">
+                {{ userDetail.username }} 
+                
+            </h1>
+            <a href="{% url 'accounts:follower' userDetail.id 'following' %}" class="notlink">
+                フォロ-:{{ following_num }}
+            </a>
+            <a href="{% url 'accounts:follower' userDetail.id 'followed' %}" class="notlink">
+                フォロワー:<div style="display:inline;" class="num">{{ followed_num }}</div>
+            </a>
+            {% if user.is_anonymous %}
+            {% elif user != userDetail %}
+                <div class="dropdown">
+                    <button class="wh-30px float-right dropdown-toggle" type="button"
+                        id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fa-solid fa-ellipsis-vertical"></i>
+                    </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            {% if is_block %}
+                                <a class="dropdown-item block" href="{% url 'accounts:block' userDetail.id %}" style="color:red">ブロック解除</a>
+                            {% else %}
+                                <a class="dropdown-item block" href="{% url 'accounts:block' userDetail.id %}" style="color:red">ブロック</a>
+                            {% endif %}
+                            {% if is_mute %}
+                                <a class="dropdown-item block" href="{% url 'accounts:mute' userDetail.id %}" style="color:orange">ミュート解除</a>
+                            {% else %}
+                                <a class="dropdown-item block" href="{% url 'accounts:mute' userDetail.id %}" style="color:orange">ミュート</a> 
+                            {% endif %}
+                        </div>
+                </div>
+            {% endif %}
+        </div>
+        <p>
+            {% if request.user.is_anonymous %}
                 @{{ userDetail.usertag }} 
-                {% if following %}
-                    --フォロー中
-                {% endif %}
-            </div>
-            <button type="button" class="btn {{ btn_class }} w-120px h-40px rounded-pill" id="ajax_follow" style="display:inline;">
-                <div class="result">
-                    {% if following %}
-                        フォロー解除
-                    {% elif userDetail.id != user.id %}
+                <button type="button" class="btn btn-primary w-120px h-40px rounded-pill" 
+                    onClick="location.href='{% url 'accounts:follow' userDetail.id %}'">
                         フォロー
+                </button>
+                <br>
+            {% elif user.id == userDetail.id %}
+                @{{ userDetail.usertag }}
+            {% else %}
+                <div class="following" style="display:inline;">
+                    @{{ userDetail.usertag }} 
+                    {% if following %}
+                        --フォロー中
                     {% endif %}
                 </div>
-            </button>
+                <button type="button" class="btn {{ btn_class }} w-120px h-40px rounded-pill" id="ajax_follow" style="display:inline;">
+                    <div class="result">
+                        {% if following %}
+                            フォロー解除
+                        {% elif userDetail.id != user.id %}
+                            フォロー
+                        {% endif %}
+                    </div>
+                </button>
+                <br>
+            {% endif %}
+        </p>
+        <p>
+            {{ userDetail.created_at }}に登録
+        </p>
+    </div>
+    
+    {% if is_block %}
+        <div>
             <br>
-        {% endif %}
-    </p>
-    <p>
-        {{ userDetail.created_at }}に登録
-    </p>
-    <div class="row-1" style="position: sticky;top: 55px;z-index:2;background-color:#fff;">
-        <br>
-        <ul class="nav nav-tabs nav-fill nav-pills" role="tablist">
-            <li class="nav-item tab-hov">
-                <a class="nav-link active" id="item1-tab" data-toggle="tab" href="#item1" role="tab" aria-controls="item1" aria-selected="true">
-                    投稿
-                </a>
-            </li>
-            <li class="nav-item tab-hov">
-                <a class="nav-link" id="item2-tab" 
-                    data-toggle="tab" href="#item2" role="tab" aria-controls="item2" aria-selected="false">
-                    イイね
-                </a>
-            </li>
-        </ul>
-        <hr width="100%" color="#0" style="height:4px;">
-        <br>
-    </div>
-
-    <div class="tab-content">
-        <div class="tab-pane fade show active" id="item1" role="tabpanel" aria-labelledby="item1-tab">
-            {% for post in posts reversed %}
-                <div class="card w-150px center-block mx-auto" style="position:relative;">
-                    <a href="{% url 'sns:post' post.pk %}" style="position:absolute;inset:0;">
-                        <div class="card-header bg-secondary h-50px">
-                            <h5 style="text-align:left;float:left;">
-                                <a href='{% url "sns:post" post.pk %}' class="on-a title-link">
-                                    {{ post.title }} 
-                                </a>
-                            </h5>
-                            <p style="text-align:right">
-                                <font color="white">
-                                    {{ post.created_at }}
-                                </font>
-                            </p>
-                        </div>
-                        <div class="card-body detail">
-                            <p class="card-text">
-                                {{ post.detail | linebreaks }}
-                            </p>
-                        </div>
-                        <div class="card-footer h-50px text-right">
-                            {% if request.user.is_anonymous %}
-                                <button onClick="location.href='{% url 'sns:good' post.id 1 %}'" class="good on-a">
-                                    <i class="fa-regular fa-heart"></i>
-                                </button>
-                            {% else %}
-                                <button onClick="on_good('{{ post.id }}')" class="good on-a" >
-                                    <div id="{{ post.id }}" style="display:inline;">
-                                        {% if post.id in goods %}
-                                            <i class="fa-solid fa-heart" style="color: #ff0000;"></i>
-                                        {% else %}
-                                            <i class="fa-regular fa-heart"></i>
-                                        {% endif %}
-                                    </div>
-                                </button>
-                            {% endif %}
-                            <font size="4">
-                                <a href="{% url 'sns:good_user' post.id %}" class="notlink on-a">
-                                    <div id="num_{{ post.id }}" style="display:inline;">:{{ post.good_num }}イイね</div> 
-                                </a>
-                            </font>
-                        </div>
+            <br>
+            <h1 style="color:red; text-align:center;">ブロック中のユーザー<h1>
+        </div>
+    {% elif is_blocked %}
+        <div>
+            <br>
+            <br>
+            <h3 style="text-align:center;">このユーザーは投稿の公開を制限しています</h3>
+        </div>
+    {% else %}
+        <div class="row-1" style="position: sticky;top: 55px;z-index:2;background-color:#fff;">
+            <br>
+            <ul class="nav nav-tabs nav-fill nav-pills" role="tablist">
+                <li class="nav-item tab-hov">
+                    <a class="nav-link active" id="item1-tab" data-toggle="tab" href="#item1" role="tab" aria-controls="item1" aria-selected="true">
+                        投稿
                     </a>
-                </div>
-            {% endfor %}
+                </li>
+                <li class="nav-item tab-hov">
+                    <a class="nav-link" id="item2-tab" 
+                        data-toggle="tab" href="#item2" role="tab" aria-controls="item2" aria-selected="false">
+                        イイね
+                    </a>
+                </li>
+            </ul>
+            <hr width="100%" color="#0" style="height:4px;">
+            <br>
         </div>
-        <div class="tab-pane fade" id="item2" role="tabpanel" aria-labelledby="item2-tab">
+
+
+        <div class="tab-content">
+            <div class="tab-pane fade show active" id="item1" role="tabpanel" aria-labelledby="item1-tab">
+                {% for post in posts reversed %}
+                    <div class="card w-150px center-block mx-auto" style="position:relative;">
+                        <a href="{% url 'sns:post' post.pk %}" style="position:absolute;inset:0;">
+                            <div class="card-header bg-secondary h-50px">
+                                <h5 style="text-align:left;float:left;">
+                                    <a href='{% url "sns:post" post.pk %}' class="on-a title-link">
+                                        {{ post.title }} 
+                                    </a>
+                                </h5>
+                                <p style="text-align:right">
+                                    <font color="white">
+                                        {{ post.created_at }}
+                                    </font>
+                                </p>
+                            </div>
+                            <div class="card-body detail">
+                                <p class="card-text">
+                                    {{ post.detail | linebreaks }}
+                                </p>
+                            </div>
+                            <div class="card-footer h-50px text-right">
+                                {% if request.user.is_anonymous %}
+                                    <button onClick="location.href='{% url 'sns:good' post.id 1 %}'" class="good on-a">
+                                        <i class="fa-regular fa-heart"></i>
+                                    </button>
+                                {% else %}
+                                    <button onClick="on_good('{{ post.id }}')" class="good on-a" >
+                                        <div id="{{ post.id }}" style="display:inline;">
+                                            {% if post.id in goods %}
+                                                <i class="fa-solid fa-heart" style="color: #ff0000;"></i>
+                                            {% else %}
+                                                <i class="fa-regular fa-heart"></i>
+                                            {% endif %}
+                                        </div>
+                                    </button>
+                                {% endif %}
+                                <font size="4">
+                                    <a href="{% url 'sns:good_user' post.id %}" class="notlink on-a">
+                                        <div id="num_{{ post.id }}" style="display:inline;">:{{ post.good_num }}イイね</div> 
+                                    </a>
+                                </font>
+                            </div>
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="tab-pane fade" id="item2" role="tabpanel" aria-labelledby="item2-tab">
+            </div>
         </div>
-    </div>
+    {% endif %}
 {% endblock %}
 
 {% block extra_ajax %}

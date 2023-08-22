@@ -48,6 +48,7 @@ def user_detail(request, id):
         goods.add(g.post.id)
     context["goods"] = goods
     context["is_block"] = Block.objects.filter(blocker=request.user, blocked=user).exists()
+    context["is_blocked"] = Block.objects.filter(blocker=user, blocked=request.user).exists()
     context["is_mute"] = Mute.objects.filter(muter=request.user, muted=user).exists()
     return render(request, "accounts/userDetail.html", context)
 
@@ -164,5 +165,17 @@ def ajax_goodtab(request, id):
     for g in good:
         goods.add(g.post.id)
     context["goods"] = goods
+    blocks = set()
+    for b in Block.objects.filter(blocker=request.user):
+        blocks.add(b.blocked)
+    context["blocks"] = blocks
+    blocked = set()
+    for b in Block.objects.filter(blocked=request.user):
+        blocked.add(b.blocker)
+    context["blocked"] = blocked
+    mutes = set()
+    for m in Mute.objects.filter(muter=request.user):
+        mutes.add(m.muted)
+    context["mutes"] = mutes
     return render(request, "accounts/goodTab.html", context)
 

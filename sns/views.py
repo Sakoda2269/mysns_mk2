@@ -2,7 +2,7 @@ from typing import Any, Dict
 from django.db.models.query import QuerySet
 from django.views import generic
 from .models import Post, Good
-from accounts.models import Follower
+from accounts.models import Follower, Block, Mute
 from .forms import CreatePost
 from django.urls import reverse_lazy
 from django.forms.models import BaseModelForm
@@ -29,6 +29,18 @@ class IndexView(generic.ListView):
             follows.add(f.followed)
         context["goods"] = goods
         context["following"] = follows
+        blocks = set()
+        for b in Block.objects.filter(blocker=self.request.user):
+            blocks.add(b.blocked)
+        context["blocks"] = blocks
+        blocked = set()
+        for b in Block.objects.filter(blocked=self.request.user):
+            blocked.add(b.blocker)
+        context["blocked"] = blocked
+        mutes = set()
+        for m in Mute.objects.filter(muter=self.request.user):
+            mutes.add(m.muted)
+        context["mutes"] = mutes
         return context  
     
 
@@ -40,7 +52,9 @@ class DetailView(generic.DetailView):
         if self.request.user.is_anonymous:
             return context
         post = context.get("object")
-        context["goods"] = len(Good.objects.filter(gooder=self.request.user, post=post))
+        context["goods"] = Good.objects.filter(gooder=self.request.user, post=post).exists()
+        context["is_block"] = Block.objects.filter(blocker=self.request.user, blocked=post.author).exists()
+        context["is_blocked"] = Block.objects.filter(blocker=post.author, blocked=self.request.user).exists()
         return context
     
 
@@ -121,5 +135,6 @@ def good_user(request, id):
     context = {
         "gooders":good_users
     }
+    
     return render(request, "sns/good_user.html", context)
     
