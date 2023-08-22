@@ -135,3 +135,42 @@ class Follower(models.Model):
         related_name="followed"
     )
     follow_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.following.username
+
+
+class Block(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    blocker = models.ForeignKey(
+        get_user_model(),
+        on_delete=models.CASCADE,
+        related_name="blocker"
+    )
+    blocked = models.ForeignKey(
+        get_user_model(),
+        on_delete=models.CASCADE,
+        related_name="blocked"
+    )
+    block_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.blocker.username
+
+
+class Mute(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    muter = models.ForeignKey(
+        get_user_model(),
+        on_delete=models.CASCADE,
+        related_name="muter"
+    )
+    muted = models.ForeignKey(
+        get_user_model(),
+        on_delete=models.CASCADE,
+        related_name="muted"
+    )
+    mute_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.muter.username

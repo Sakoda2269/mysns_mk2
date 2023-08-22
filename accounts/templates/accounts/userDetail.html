@@ -79,15 +79,24 @@
         <a href="{% url 'accounts:follower' userDetail.id 'followed' %}" class="notlink">
             フォロワー:<div style="display:inline;" class="num">{{ followed_num }}</div>
         </a>
-        {% if user != userDetail %}
+        {% if user.is_anonymous %}
+        {% elif user != userDetail %}
             <div class="dropdown">
                 <button class="wh-30px float-right dropdown-toggle" type="button"
                     id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <i class="fa-solid fa-ellipsis-vertical"></i>
                 </button>
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                        <a class="dropdown-item block" href="#" style="color:red">ブロック</a>
-                        <a class="dropdown-item block" href="#" style="color:orange">ミュート</a>
+                        {% if is_block %}
+                            <a class="dropdown-item block" href="{% url 'accounts:block' userDetail.id %}" style="color:red">ブロック解除</a>
+                        {% else %}
+                            <a class="dropdown-item block" href="{% url 'accounts:block' userDetail.id %}" style="color:red">ブロック</a>
+                        {% endif %}
+                        {% if is_mute %}
+                            <a class="dropdown-item block" href="{% url 'accounts:mute' userDetail.id %}" style="color:orange">ミュート解除</a>
+                        {% else %}
+                            <a class="dropdown-item block" href="{% url 'accounts:mute' userDetail.id %}" style="color:orange">ミュート</a> 
+                        {% endif %}
                     </div>
             </div>
         {% endif %}

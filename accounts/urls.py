@@ -12,4 +12,6 @@ urlpatterns = [
     path("ajax_follow/", views.ajax_follow, name="ajax_follow"),
     path("follower/<str:id>/<str:follow_type>", views.follower_list, name="follower"),
     path("goodTab/<str:id>/", views.ajax_goodtab, name="ajax_good_tab"),
+    path("block/<str:id>", views.block, name="block"),
+    path("mute/<str:id>", views.mute, name="mute"),
 ]

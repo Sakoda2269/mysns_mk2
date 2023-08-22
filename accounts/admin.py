@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth import get_user_model
-from .models import Follower
+from .models import Follower, Block, Mute
 
 class CustomUserAdmin(UserAdmin):
     fieldsets = (
@@ -42,3 +42,5 @@ CustomUser = get_user_model()
 
 admin.site.register(CustomUser, CustomUserAdmin)
 admin.site.register(Follower)
+admin.site.register(Block)
+admin.site.register(Mute)

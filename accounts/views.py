@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.views import generic
 from django.urls import reverse_lazy
 from .forms import SignUpForm
-from .models import CustomUser, Follower
+from .models import CustomUser, Follower, Block, Mute
 from sns.models import Post, Good
 from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
@@ -47,6 +47,8 @@ def user_detail(request, id):
     for g in good:
         goods.add(g.post.id)
     context["goods"] = goods
+    context["is_block"] = Block.objects.filter(blocker=request.user, blocked=user).exists()
+    context["is_mute"] = Mute.objects.filter(muter=request.user, muted=user).exists()
     return render(request, "accounts/userDetail.html", context)
 
 
@@ -79,6 +81,38 @@ def ajax_follow(request):
     followed_num = Follower.objects.filter(followed=followed_user).count()
     context["num"] = followed_num
     return JsonResponse(context)
+
+
+@login_required
+def block(request, id):
+    blocker = request.user
+    blocked = get_object_or_404(CustomUser, id=id)
+    if blocker == blocked:
+        return redirect(f"/accounts/user/{id}")
+    if Block.objects.filter(blocker=blocker, blocked=blocked).exists():
+        Block.objects.get(blocker=blocker, blocked=blocked).delete()
+    else:
+        Block.objects.create(
+            blocker = blocker,
+            blocked = blocked
+        )
+    return redirect(f"/accounts/user/{id}")
+
+
+@login_required
+def mute(request, id):
+    muter = request.user
+    muted = get_object_or_404(CustomUser, id=id)
+    if muter == muted:
+        return redirect(f"/accounts/user/{id}")
+    if Mute.objects.filter(muter=muter, muted=muted).exists():
+        Mute.objects.get(muter=muter, muted=muted).delete()
+    else:
+        Mute.objects.create(
+            muter = muter,
+            muted = muted
+        )
+    return redirect(f"/accounts/user/{id}")
 
 
 def follower_list(request, id, follow_type):
