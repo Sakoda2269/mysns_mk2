@@ -60,6 +60,9 @@
             background-color: #ccf;
             color: black;
         }
+        .block:hover{
+            background:#ddd;
+        }
     </style>
 {% endblock %}
 
@@ -83,8 +86,8 @@
                         <i class="fa-solid fa-ellipsis-vertical"></i>
                 </button>
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                        <a class="dropdown-item" href="#" style="color:red">ブロック</a>
-                        <a class="dropdown-item" href="#" style="color:orange">ミュート</a>
+                        <a class="dropdown-item block" href="#" style="color:red">ブロック</a>
+                        <a class="dropdown-item block" href="#" style="color:orange">ミュート</a>
                     </div>
             </div>
         {% endif %}
