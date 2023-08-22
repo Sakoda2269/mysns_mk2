@@ -12,6 +12,7 @@
 {% endblock %}
 
 {% block content %}
+    {% if object.author == user %}
     <h1>投稿の削除</h1>
     <p>以下の投稿をを削除しますか？</p><br><br>
     <h4>{{ object.title }}</h4>
@@ -23,6 +24,13 @@
         <button type="submit" class="submit delete btn btn-danger rounded-pill w-125px h-34px">削除する</button>
     </form>
     <br>
+    {% else %}
+        <br>
+        <br>
+        <h1 style="color:red; text-align:center;">権限がありません!<h1>
+        <br>
+        <br>
+    {% endif %}
     <div>
         <button onClick="location.href = 'JavaScript:history.back()'" class="btn btn-secondary rounded-pill w-125px h-34px">
             &lt; 戻る

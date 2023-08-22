@@ -9,11 +9,11 @@ from django.forms.models import BaseModelForm
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import UserPassesTestMixin
 
 
 class IndexView(generic.ListView):
     model = Post
-
 
     def get_context_data(self, *args, **kwargs: Any):
         context = super().get_context_data(*args, **kwargs)
@@ -35,7 +35,6 @@ class IndexView(generic.ListView):
 class DetailView(generic.DetailView):
     model = Post
 
-
     def get_context_data(self, *args, **kwargs: Any):
         context = super().get_context_data(*args, **kwargs)
         if self.request.user.is_anonymous:
@@ -49,20 +48,25 @@ class CreateView(generic.edit.CreateView):
     model = Post
     form_class = CreatePost
 
-
     def form_valid(self, form: BaseModelForm) -> HttpResponse:
         form.instance.author = self.request.user
         return super(CreateView, self).form_valid(form)
     
     
-class UpdateView(generic.edit.UpdateView):
+class UpdateView(UserPassesTestMixin, generic.edit.UpdateView):
     model = Post
     form_class = CreatePost
 
+    def test_func(self):
+        return self.get_object().author == self.request.user
 
-class DeleteView(generic.edit.DeleteView):
+
+class DeleteView(UserPassesTestMixin, generic.edit.DeleteView):
     model = Post
     success_url = reverse_lazy("sns:index")
+
+    def test_func(self):
+        return self.get_object().author == self.request.user
 
 
 @login_required
