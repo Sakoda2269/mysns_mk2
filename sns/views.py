@@ -3,7 +3,7 @@ from django.db.models.query import QuerySet
 from django.views import generic
 from .models import Post, Good
 from accounts.models import Follower, Block, Mute
-from .forms import CreatePost
+from .forms import CreatePost, CommentForm
 from django.urls import reverse_lazy
 from django.forms.models import BaseModelForm
 from django.http import HttpResponse, JsonResponse
@@ -11,12 +11,18 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import UserPassesTestMixin
 
-
 class IndexView(generic.ListView):
     model = Post
 
     def get_context_data(self, *args, **kwargs: Any):
         context = super().get_context_data(*args, **kwargs)
+        comments = {}
+        com = Post.objects.filter(mode=1)
+        for c in com:
+            if c.parent_post.id not in comments:
+                comments[c.parent_post.id] = []
+            comments[c.parent_post.id].append(c)
+        context["post_comments"] = comments
         if self.request.user.is_anonymous:
             return context
         good = Good.objects.filter(gooder=self.request.user)
@@ -137,4 +143,19 @@ def good_user(request, id):
     }
     
     return render(request, "sns/good_user.html", context)
-    
+
+
+class Comment(generic.edit.CreateView):
+    model = Post
+    form_class = CommentForm
+    template_name = "sns/comment_form.html"
+    success_url = reverse_lazy("sns:index")
+
+
+    def form_valid(self, form: BaseModelForm) -> HttpResponse:
+        form.instance.mode = 1
+        form.instance.author = self.request.user
+        id = self.kwargs["pk"]
+        form.instance.parent_post = get_object_or_404(Post, id=id)
+        return super(Comment, self).form_valid(form)
+

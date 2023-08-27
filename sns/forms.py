@@ -24,4 +24,11 @@ class CreatePost(forms.ModelForm):
         self.fields['detail'].widget.attrs = {'placeholder': 'detail',  'class': 'form-control', 
                                               'rows': '10', 
                                               'onkeyup': f'ShowLength(value, "detail", {Post._meta.get_field("detail").max_length});'}
+
+
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Post
+        fields = ("detail", )
+
     

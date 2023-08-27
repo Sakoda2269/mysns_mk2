@@ -6,7 +6,7 @@ import uuid
 
 class Post(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    title = models.CharField(max_length=50)
+    title = models.CharField(max_length=50, null=True)
     detail = models.TextField(max_length=255)
     author = models.ForeignKey(
         get_user_model(),
@@ -14,9 +14,17 @@ class Post(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True)
     good_num = models.IntegerField(default=0)
-
+    mode = models.IntegerField(default=0)#0:通常の投稿 1:コメント
+    parent_post = models.ForeignKey(
+        "Post",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True
+    )
     
     def __str__(self):
+        if self.title == None:
+            return "comment"
         return self.title
     
 
