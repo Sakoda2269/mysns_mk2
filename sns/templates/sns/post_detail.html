@@ -2,21 +2,37 @@
 
 {% block extra_style %}
     <style>
-    .good, .good:focus, .good:hover {
-        border: none;
-        outline: none;
-        background: none;
-    }
-    .w-125px {
-            width: 125px !important;
+        .good, .good:focus, .good:hover {
+            border: none;
+            outline: none;
+            background: none;
         }
-    .h-34px {
-        height: 34px !important;
-    }
-    .notlink{
-        text-decoration:none !important;
-        color:black !important;
-    }
+        .w-125px {
+                width: 125px !important;
+            }
+        .h-34px {
+            height: 34px !important;
+        }
+        .notlink{
+            text-decoration:none !important;
+            color:black !important;
+        }
+        .block:hover{
+            background:#ddd;
+        }
+        .wh-30px{
+            width: 35px !important;
+            height: 35px !important;
+            border-radius:50%;
+        }
+        .wh-30px:hover{
+            background: #ccc;
+            border-radius:50%;
+        }
+        .wh-30px:focus{
+            background: #aaa;
+            border-radius:50%;
+        }
     </style>
 {% endblock %}
 
@@ -31,43 +47,61 @@
             <br>
             <h4 style="text-align:center;">この投稿をしたユーザーは投稿の公開を制限しています<h4>
         {% else %}
-            <h1>{{ post.title }}</h1>
-            -
-            <a href='{% url "accounts:user" post.author.id %}'>
-                {{ post.author }}
-            </a>
             <div>
-                {{ post.created_at }}<br><br>
-                {{ post.detail | linebreaks }}
-            </div>
-            <p style="margin-left:150px">
-                {% if request.user.is_anonymous %}
-                    <button onClick="location.href='{% url 'sns:good' post.id 0 %}'" class="good">
-                        <i class="fa-regular fa-heart"></i>
-                    </button>
-                {% else %}
-                    <button id="ajax-good" class="good">
-                        <div class="result">
-                            {% if goods %}
-                                <i class="fa-solid fa-heart" style="color: #ff0000;"></i>
-                            {% else %}
-                                <i class="fa-regular fa-heart"></i>
-                            {% endif %}
-                        </div>
-                    </button>
+                <h5>
+                    <a href='{% url "accounts:user" post.author.id %}' style="text-align:left">
+                        {{ post.author }}
+                    </a>
+                </h5>
+                {% if request.user.id == object.author_id %}
+                    <div class="dropdown" style="float:right;">
+                        <button class="wh-30px float-right dropdown-toggle" type="button"
+                            id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fa-solid fa-ellipsis-vertical"></i>
+                        </button>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <a class="dropdown-item block" href="{% url 'sns:update' post.pk %}" style="color:green">編集</a>
+                                <a class="dropdown-item block" href="{% url 'sns:delete' post.pk %}" style="color:red">削除</a>
+                            </div>
+                    </div>
                 {% endif %}
-                <a href="{% url 'sns:good_user' post.id %}" class="notlink">
-                : <span class="num">{{ post.good_num }}</span> イイね
-                </a>
-            </p>
-            <br>
-            <br>
-            {% if request.user.id == object.author_id %}
-                <div>
-                    <button onClick="location.href='{% url 'sns:update' post.pk %}'" class="btn btn-success rounded-pill w-125px h-34px">編集</button>
-                    <button onClick="location.href='{% url 'sns:delete' post.pk %}'" class="btn btn-danger rounded-pill w-125px h-34px">削除</button>
+                <h3 style="text-align:center">
+                    {{ post.title }}
+                </h3>
+
+                <div style="text-align:right">
+                    {{ post.created_at }}
                 </div>
-            {% endif %}
+                <hr width="100%" color="#ddd">
+                <br>
+                <div style="padding-left:5rem;">
+                    {{ post.detail | linebreaks }}
+                </div>
+                <br>
+                <hr width="100%" color="#ddd">
+                <p style="text-align:right;">
+                    {% if request.user.is_anonymous %}
+                        <button onClick="location.href='{% url 'sns:good' post.id 0 %}'" class="good">
+                            <i class="fa-regular fa-heart"></i>
+                        </button>
+                    {% else %}
+                        <button id="ajax-good" class="good">
+                            <div class="result">
+                                {% if goods %}
+                                    <i class="fa-solid fa-heart" style="color: #ff0000;"></i>
+                                {% else %}
+                                    <i class="fa-regular fa-heart"></i>
+                                {% endif %}
+                            </div>
+                        </button>
+                    {% endif %}
+                    <a href="{% url 'sns:good_user' post.id %}" class="notlink">
+                    : <span class="num">{{ post.good_num }}</span> イイね
+                    </a>
+                </p>
+                <br>
+                <br>
+            </div>
         {% endif %}
     </div>
 {% endblock %}
