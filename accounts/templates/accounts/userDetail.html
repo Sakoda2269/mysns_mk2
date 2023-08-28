@@ -255,7 +255,6 @@
 
     $(document).ready(function(){
         $("#item2-tab").on('click', function() {
-            console.log("aaa");
             $("#item2").load('{% url "accounts:ajax_good_tab" userDetail.id %}', function(){});
         });
     });

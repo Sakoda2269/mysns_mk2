@@ -63,61 +63,16 @@
     <hr size="10" width="100%" color="black">
     <br>
 </div>
+
+
 <div class="tab-content">
-    <div class="tab-pane fade show active" id="item1" role="tabpanel" aria-labelledby="item1-tab">
     {% comment %} 全体タブ {% endcomment %}
-        {% for post in object_list reversed %}
-            {% if post.author in blocks or post.author in blocked or post.author in mutes or post.mode != 0 %}
-            {% else %}
-                <div class="clearfix">
-                    <h6>
-                        <a href='{% url "accounts:user" post.author.pk%}'>
-                            {{ post.author }}
-                        </a>
-                    </h6>
-                    <div class="card w-150px float-right clearfix" style="position:relative;">
-                        <a href="{% url 'sns:post' post.pk %}" style="position:absolute;inset:0;">
-                            <div class="card-header bg-secondary h-50px clearfix">
-                                <h5 style="text-align:left;float:left;">
-                                    <a href='{% url "sns:post" post.pk %}' class="on-a title-link">
-                                        {{ post.title }} 
-                                    </a>
-                                </h5>
-                                <p style="text-align:right;color:white">
-                                        {{ post.created_at }}
-                                </p>
-                            </div>
-                            <div class="card-body detail clearfix">
-                                <p class="card-text">
-                                    {{ post.detail | linebreaks }}
-                                </p>
-                            </div>
-                            <div class="card-footer h-50px text-right clearfix">
-                                {% if request.user.is_anonymous %}
-                                    <button onClick="location.href='{% url 'sns:good' post.id 1 %}'" class="good on-a">
-                                        <i class="fa-regular fa-heart"></i>
-                                    </button>
-                                {% else %}
-                                    <button onClick="on_good('{{ post.id }}')" class="good on-a" >
-                                        <div id="{{ post.id }}" style="display:inline;">
-                                            {% if post.id in goods %}
-                                                <i class="fa-solid fa-heart" style="color: #ff0000;"></i>
-                                            {% else %}
-                                                <i class="fa-regular fa-heart"></i>
-                                            {% endif %}
-                                        </div>
-                                    </button>
-                                {% endif %}
-                                <a href="{% url 'sns:good_user' post.id %}" class="notlink on-a">
-                                    <div id="num_{{ post.id }}" style="display:inline;size:4;">:{{ post.good_num }}イイね</div> 
-                                </a>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-            {% endif %}
-        {% endfor %}
+    <div class="tab-pane fade show active" id="item1" role="tabpanel" aria-labelledby="item1-tab">
+        {% with posts_include=object_list good_mode="1" othergood='21'%}
+            {% include 'post_list_include.html' %}
+        {% endwith %}
     </div>
+
     <div class="tab-pane fade" id="item2" role="tabpanel" aria-labelledby="item2-tab">
         {% if user.is_anonymous %}
         {% comment %} ログインしていない時のフォロー中タブ {% endcomment %}
@@ -136,74 +91,20 @@
                     またはアカウントを作成
                 </a>
             </div>
+
         {% else %}
         {% comment %} ログイン時のフォロー中タブ {% endcomment %}
-            {% for post in object_list reversed %}
-                {% if post.author in blocks or post.author in blocked or post.author in mutes or post.mode != 0 %}
-                {% elif post.author in following  or post.author == user %}
-                    <div class="clearfix">
-                        <h6>
-                            <a href='{% url "accounts:user" post.author.pk%}'>
-                                {{ post.author }}
-                            </a>
-                        </h6>
-                        <div class="card w-150px center-block mx-auto" style="position:relative;">
-                            <a href="{% url 'sns:post' post.pk %}" style="position:absolute;inset:0;">
-                                <div class="card-header bg-secondary h-50px">
-                                    <h5 style="text-align:left;float:left;">
-                                        <a href='{% url "sns:post" post.pk %}' class="on-a title-link">
-                                            {{ post.title }} 
-                                        </a>
-                                    </h5>
-                                    <p style="text-align:right">
-                                        <font color="white">
-                                            {{ post.created_at }}
-                                        </font>
-                                    </p>
-                                </div>
-                                <div class="card-body detail">
-                                    <p class="card-text">
-                                        {{ post.detail | linebreaks }}
-                                    </p>
-                                </div>
-                                <div class="card-footer h-50px text-right">
-                                    {% if request.user.is_anonymous %}
-                                        <button onClick="location.href='{% url 'sns:good' post.id 1 %}'" class="good on-a">
-                                            <i class="fa-regular fa-heart"></i>
-                                        </button>
-                                    {% else %}
-                                        <button onClick="on_good('{{ post.id }}')" class="good on-a" >
-                                            <div id="{{ post.id }}" style="display:inline;">
-                                                {% if post.id in goods %}
-                                                    <i class="fa-solid fa-heart" style="color: #ff0000;"></i>
-                                                {% else %}
-                                                    <i class="fa-regular fa-heart"></i>
-                                                {% endif %}
-                                            </div>
-                                        </button>
-                                    {% endif %}
-                                    <font size="4">
-                                        <a href="{% url 'sns:good_user' post.id %}" class="notlink on-a">
-                                            <div id="num_{{ post.id }}" style="display:inline;">:{{ post.good_num }}
-                                                イイね
-                                            </div> 
-                                        </a>
-                                    </font>
-                                </div>
-                            </a>
-                        </div>
-                        <br>
-                    </div>
-                {% endif %}
-            {% endfor %}
+            <div id="follow-tab">
+                {% with posts_include=object_list|following_post:following good_mode='2' othergood='21'%}
+                    {% include 'post_list_include.html' %}
+                {% endwith %}
+            </div>
         {% endif %}
     </div>
 </div>
-
-
-
-
 <br>
+
+{% comment %} 投稿作成ボタン {% endcomment %}
 {% if user.is_authenticated %}
     <div style="position: fixed;bottom: 100px;right: 100px">
         <button onClick="location.href='{% url 'sns:create' %}'" type="button" 
@@ -215,14 +116,19 @@
 
 {% endblock %}
 
+{% block extra_ajax %}
+   
+{% endblock %}
+
 {% block extrajs %}
 <script type="text/javascript">
 
 let id;
 
-function on_good(post_id){
+function on_good(post_id, mode){
     console.log(post_id);
     const url = '{% url "sns:ajaxgood" %}';
+    let modes = mode.split('');
     fetch(url, {
         method: 'POST',
         body: 'post_id=' + String(post_id),
@@ -233,16 +139,18 @@ function on_good(post_id){
     }).then(response  => {
         return response.json();
     }).then(response => {
-        document.getElementById('num_' + String(post_id)).textContent = ":" + String(response.num) + "イイね";
-        
-        if(response.method == "create"){
-            document.getElementById(String(post_id)).innerHTML = '<i class="fa-solid fa-heart fa-beat" style="color: #ff0000;"></i>';
-            id = window.setTimeout(function(){
-                document.getElementById(String(post_id)).innerHTML = '<i class="fa-solid fa-heart" style="color: #ff0000;"></i>';
-            }, 1000);
-        }else{
-            document.getElementById(String(post_id)).innerHTML = '<i class="fa-solid fa-heart"></i>';
-            window.clearTimeout(id);
+        for (m of modes){
+            let goodid = String(post_id) + '_' + String(m);
+            document.getElementById('num_' + goodid).textContent = ":" + String(response.num) + "イイね";
+            if(response.method == "create"){
+                document.getElementById(goodid).innerHTML = '<i class="fa-solid fa-heart fa-beat" style="color: #ff0000;"></i>';
+                id = window.setTimeout(function(){
+                    document.getElementById(goodid).innerHTML = '<i class="fa-solid fa-heart" style="color: #ff0000;"></i>';
+                }, 1000);
+            }else{
+                document.getElementById(goodid).innerHTML = '<i class="fa-solid fa-heart"></i>';
+                window.clearTimeout(id);
+            }
         }
     }).catch(error => {
         console.log(error);

@@ -12,7 +12,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import UserPassesTestMixin
 
 class IndexView(generic.ListView):
-    model = Post
+    queryset = Post.objects.filter(mode=0)
 
     def get_context_data(self, *args, **kwargs: Any):
         context = super().get_context_data(*args, **kwargs)
@@ -33,6 +33,7 @@ class IndexView(generic.ListView):
         follows = set()
         for f in follower:
             follows.add(f.followed)
+        follows.add(self.request.user)
         context["goods"] = goods
         context["following"] = follows
         blocks = set()
