@@ -1,0 +1,26 @@
+.detail {
+    margin-left:1rem;
+}
+.title-link, .title-link:hover{
+    color:white;
+}
+.good, .good:focus, .good:hover {
+    border: none;
+    outline: none;
+    background: none;
+    display: inline;
+}
+.on-a{
+    position: relative;
+    z-index: 1;
+}
+.notlink{
+    text-decoration:none !important;
+    color:black !important;
+}
+.w-150px {
+    width: 80% !important;
+}
+.h-50px{
+    height: 50px !important;
+}

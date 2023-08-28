@@ -33,6 +33,10 @@
             background: #aaa;
             border-radius:50%;
         }
+        .notlink{
+            text-decoration:none !important;
+            color:black !important;
+        }
     </style>
 {% endblock %}
 
@@ -47,12 +51,14 @@
             <br>
             <h4 style="text-align:center;">この投稿をしたユーザーは投稿の公開を制限しています<h4>
         {% else %}
+            {% comment %} ブロックしていないとき {% endcomment %}
             <div>
                 <h5>
                     <a href='{% url "accounts:user" post.author.id %}' style="text-align:left">
                         {{ post.author }}
                     </a>
                 </h5>
+                {% comment %} 削除と編集のボタン {% endcomment %}
                 {% if request.user.id == object.author_id %}
                     <div class="dropdown" style="float:right;">
                         <button class="wh-30px float-right dropdown-toggle" type="button"
@@ -65,20 +71,32 @@
                             </div>
                     </div>
                 {% endif %}
-                <h3 style="text-align:center">
-                    {{ post.title }}
-                </h3>
 
-                <div style="text-align:right">
-                    {{ post.created_at }}
+                <div>
+                    <h3 style="text-align:center">
+                        {{ post.title }}
+                    </h3>
+                    <div style="text-align:right">
+                        {{ post.created_at }}
+                    </div>
+                    <hr width="100%" color="#ddd">
+                    <br>
+                    <div style="padding-left:5rem;">
+                        {{ post.detail | linebreaks }}
+                    </div>
+                    <br>
+                    <hr width="100%" color="#ddd">
                 </div>
-                <hr width="100%" color="#ddd">
-                <br>
-                <div style="padding-left:5rem;">
-                    {{ post.detail | linebreaks }}
-                </div>
-                <br>
-                <hr width="100%" color="#ddd">
+
+                {% comment %} コメントボタン {% endcomment %}
+                <p style="float:left">
+                    コメントする:
+                    <a href="{% url 'sns:comment' post.id %}" class="notlink">
+                        <i class="fa-solid fa-comment"></i>
+                    </a>
+                </p>
+
+                {% comment %} イイねボタン {% endcomment %}
                 <p style="text-align:right;">
                     {% if request.user.is_anonymous %}
                         <button onClick="location.href='{% url 'sns:good' post.id 0 %}'" class="good">
@@ -99,8 +117,19 @@
                     : <span class="num">{{ post.good_num }}</span> イイね
                     </a>
                 </p>
+
+                <hr widht="100%" color="#ddd">
+                <hr widht="100%" color="#ddd" height="4px">
+
+                {% comment %} コメント一覧 {% endcomment %}
                 <br>
+                <h5 style="text-align:center">コメント</h5>
                 <br>
+                {% with posts_include=comments %}
+                    <div class="mx-auto">
+                        {% include 'post_list_include.html' %}
+                    </div>
+                {% endwith %}
             </div>
         {% endif %}
     </div>

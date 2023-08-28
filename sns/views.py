@@ -61,6 +61,7 @@ class DetailView(generic.DetailView):
         context["goods"] = Good.objects.filter(gooder=self.request.user, post=post).exists()
         context["is_block"] = Block.objects.filter(blocker=self.request.user, blocked=post.author).exists()
         context["is_blocked"] = Block.objects.filter(blocker=post.author, blocked=self.request.user).exists()
+        context["comments"] = Post.objects.filter(parent_post=post, mode=1)
         return context
     
 
