@@ -50,6 +50,7 @@
 {% block content %}
 {% load custom_filter %}
 <h1>タイムライン</h1><br>
+
 <div class="row-1" style="position: sticky;top: 55px;z-index:2;background-color:#fff;">
     <br>
     <ul class="nav nav-tabs nav-fill nav-pills" role="tablist">
@@ -112,5 +113,9 @@
 {% endif %}
 <br>
 <br>
+{% endblock %}
+
+{% block extrajs %}
+{% include 'js/on_good_js.html' %}
 
 {% endblock %}

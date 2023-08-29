@@ -91,9 +91,10 @@
                 {% comment %} コメントボタン {% endcomment %}
                 <p style="float:left">
                     コメントする:
-                    <a href="{% url 'sns:comment' post.id %}" class="notlink">
+                    <button onclick="$('#example-5').collapse('toggle')" class="good">
                         <i class="fa-solid fa-comment"></i>
-                    </a>
+                    </button>
+                    
                 </p>
 
                 {% comment %} イイねボタン {% endcomment %}
@@ -119,6 +120,13 @@
                 </p>
 
                 <hr widht="100%" color="#ddd">
+
+                <div class="collapse" id="example-5">
+                    <div class="card card-body">
+                        Hypertext Markup Language (HTML) is ...
+                    </div>
+                </div>
+
                 <hr widht="100%" color="#ddd" height="4px">
 
                 {% comment %} コメント一覧 {% endcomment %}

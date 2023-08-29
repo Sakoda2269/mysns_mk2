@@ -34,6 +34,18 @@
                 {% comment %} カードフッタ {% endcomment %}
                 <div class="card-footer h-50px text-right clearfix">
                     <div>
+                        {% comment %} コメントボタン {% endcomment %}
+                        <p style="float:left">
+                            コメントする:
+                            <button data-toggle="collapse" type="button" data-target="#collapseComment"
+                                aria-expanded="false" aria-controls="collapseComment" class="good on-a">
+                                <i class="fa-solid fa-comment"></i>
+                            </button>
+                        </p>
+                    </div>
+
+                    <div>
+                        {% comment %} イイねボタン {% endcomment %}
                         {% if user.is_anonymous %}
                             <button onClick="location.href='{% url 'sns:good' postin.id 1 %}'" class="good on-a">
                                 <i class="fa-regular fa-heart"></i>
@@ -55,10 +67,14 @@
                     </div>
                 </div>
             </a>
+
+            <div class="collapse" id="collapseComment">
+                コメントしよう！
+            </div>
+
         </div>
         <br>
     {% endif %}
 {% empty %}
 {% endfor %}
-{% include 'js/on_good_js.html' %}
 </div>
