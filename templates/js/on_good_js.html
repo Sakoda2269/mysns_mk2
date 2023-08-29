@@ -19,6 +19,7 @@ try{
         }).then(response => {
             for (m of modes){
                 let goodid = String(post_id) + '_' + String(m);
+                console.log(goodid);
                 document.getElementById('num_' + goodid).textContent = ":" + String(response.num) + "イイね";
                 if(response.method == "create"){
                     document.getElementById(goodid).innerHTML = '<i class="fa-solid fa-heart fa-beat" style="color: #ff0000;"></i>';
