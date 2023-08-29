@@ -1,0 +1,41 @@
+<script type="text/javascript">
+try{
+    let ids = {};
+
+    function on_good(post_id, mode){
+        
+        console.log(post_id);
+        const url = '{% url "sns:ajaxgood" %}';
+        let modes = mode.split('');
+        fetch(url, {
+            method: 'POST',
+            body: 'post_id=' + String(post_id),
+            headers:{
+                'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
+                'X-CSRFToken': '{{ csrf_token }}',
+            },
+        }).then(response  => {
+            return response.json();
+        }).then(response => {
+            for (m of modes){
+                let goodid = String(post_id) + '_' + String(m);
+                document.getElementById('num_' + goodid).textContent = ":" + String(response.num) + "イイね";
+                if(response.method == "create"){
+                    document.getElementById(goodid).innerHTML = '<i class="fa-solid fa-heart fa-beat" style="color: #ff0000;"></i>';
+                    tmp = window.setTimeout(function(){
+                        document.getElementById(goodid).innerHTML = '<i class="fa-solid fa-heart" style="color: #ff0000;"></i>';
+                    }, 1000);
+                    ids[String(goodid)] = tmp;
+                }else{
+                    document.getElementById(goodid).innerHTML = '<i class="fa-solid fa-heart"></i>';
+                    window.clearTimeout(ids[String(goodid)]);
+                }
+            }
+        }).catch(error => {
+            console.log(error);
+        });
+    }
+}catch(e){
+    console.log("error");
+}
+</script>

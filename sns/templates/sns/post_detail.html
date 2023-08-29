@@ -125,7 +125,7 @@
                 <br>
                 <h5 style="text-align:center">コメント</h5>
                 <br>
-                {% with posts_include=comments %}
+                {% with posts_include=comments good_mode="1" othergood="1"%}
                     <div class="mx-auto">
                         {% include 'post_list_include.html' %}
                     </div>
@@ -136,7 +136,7 @@
 {% endblock %}
 
 {% block extra_ajax %}
-    let id;
+    let myid;
     $('#ajax-good').on('click', function(e) {
         e.preventDefault();
         $.ajax({
@@ -150,12 +150,12 @@
         .done(function(response){
             if (response.method == "create"){
                 $('.result').html('<i class="fa-solid fa-heart fa-beat" style="color: #ff0000;"></i>');
-                id = setTimeout(function(){
+                myid = setTimeout(function(){
                     $('.result').html('<i class="fa-solid fa-heart" style="color: #ff0000;"></i>');
                 }, 1000)
             }else{
                 $('.result').html('<i class="fa-regular fa-heart"></i>');
-                clearTimeout(id)
+                clearTimeout(myid)
             }
             $('.num').html(response.num);
         });

@@ -1,4 +1,5 @@
 <div>
+{% comment %} postin:投稿群 good_mode:複数タブがある場合 other_good:複数タブがある場合、ほかのやつ {% endcomment %}
 {% for postin in posts_include reversed %}
     {% if post.author in blocks or post.author in blocked or post.author in mutes%}
     {% else %}
@@ -59,4 +60,5 @@
     {% endif %}
 {% empty %}
 {% endfor %}
+{% include 'js/on_good_js.html' %}
 </div>
