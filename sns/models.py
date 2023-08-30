@@ -21,7 +21,7 @@ class Post(models.Model):
         null=True,
         blank=True
     )
-    
+
     def __str__(self):
         if self.title == None:
             return "comment"

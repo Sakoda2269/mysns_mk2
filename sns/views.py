@@ -25,8 +25,14 @@ class IndexView(generic.ListView):
                 comments[c.parent_post.id] = []
             comments[c.parent_post.id].append(c)
         context["post_comments"] = comments
+        comment_num = {}
+        for p in self.queryset:
+            comment_num[p.id] = p.post_set.all().count()
+        context["comment_num"] = comment_num
         if self.request.user.is_anonymous:
             return context
+        
+        #ログインしている場合の追加情報
         good = Good.objects.filter(gooder=self.request.user)
         goods = set()
         for g in good:
@@ -58,9 +64,18 @@ class DetailView(generic.DetailView):
 
     def get_context_data(self, *args, **kwargs: Any):
         context = super().get_context_data(*args, **kwargs)
+        post = context.get("object")
+        comments = Post.objects.filter(parent_post=post, mode=1)
+        context["comments"] = comments
+        comment_num = {}
+        for c in comments:
+            comment_num[c.id] = c.post_set.all().count()
+        context["comment_num"] = comment_num
+        context["this_comment_num"] = post.post_set.all().count()
         if self.request.user.is_anonymous:
             return context
-        post = context.get("object")
+        
+        #ログインしているときの追加情報
         good = Good.objects.filter(gooder=self.request.user)
         goods = set()
         for g in good:
@@ -69,7 +84,6 @@ class DetailView(generic.DetailView):
         context["good"] = Good.objects.filter(gooder=self.request.user, post=post).exists()
         context["is_block"] = Block.objects.filter(blocker=self.request.user, blocked=post.author).exists()
         context["is_blocked"] = Block.objects.filter(blocker=post.author, blocked=self.request.user).exists()
-        context["comments"] = Post.objects.filter(parent_post=post, mode=1)
         return context
     
 
@@ -145,6 +159,7 @@ def ajax_comment(request):
     post_id = request.POST['post_id']
     comment = request.POST['comment']
     post = Post.objects.get(id=post_id)
+    post.save()
     Post.objects.create(
         author=request.user,
         detail = comment,
@@ -152,17 +167,23 @@ def ajax_comment(request):
         parent_post = post
     )
     context = {}
+    context["comment_num"] = post.post_set.all().count()
     return JsonResponse(context)
 
 
 def ajax_comment_list(request, id):
     context = {}
-    context["comments"] = Post.objects.filter(mode=1, parent_post=Post.objects.get(id=id))
+    comments = Post.objects.filter(mode=1, parent_post=Post.objects.get(id=id))
+    context["comments"] = comments
     good = Good.objects.filter(gooder=request.user)
     goods = set()
     for g in good:
         goods.add(g.post.id)
     context["goods"] = goods
+    comment_num = {}
+    for c in comments:
+        comment_num[c.id] = c.post_set.all().count()
+    context["comment_num"] = comment_num
     return render(request, "sns/comment_list.html", context)
 
 def good_user(request, id):

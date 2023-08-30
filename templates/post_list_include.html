@@ -1,4 +1,5 @@
 <div>
+{% load custom_filter %}
 {% comment %} postin:投稿群 good_mode:複数タブがある場合 other_good:複数タブがある場合、ほかのやつ {% endcomment %}
 {% for postin in posts_include reversed %}
     {% if post.author in blocks or post.author in blocked or post.author in mutes%}
@@ -32,14 +33,17 @@
                 </div>
 
                 {% comment %} カードフッタ {% endcomment %}
-                <div class="card-footer h-50px text-right clearfix">
-                    <div>
+                <div class="card-footer h-50px text-right clearfix" style="padding-top:0">
+                    <div style="display:inline">
                         {% comment %} コメントボタン {% endcomment %}
-                        <p style="float:left">
+                        <p style="float:left;">
                             コメントする:
                             <button onClick="clearText('{{ postin.id }}')" class="good on-a">
                                 <i class="fa-solid fa-comment"></i>
                             </button>
+                            <div id="comment_num_{{ postin.id }}" style="float:left;">
+                                {{ comment_num|get_value:postin.id }}
+                            </div>
                         </p>
                     </div>
 

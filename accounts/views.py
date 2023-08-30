@@ -31,10 +31,14 @@ def user_detail(request, id):
         good_posts.append(g.post)
     context["good_posts"] = good_posts
     context["btn_class"] = "btn-primary"
-
+    comment_num = {}
+    for c in post:
+        comment_num[c.id] = c.post_set.all().count()
+    context["comment_num"] = comment_num
     if request.user.is_anonymous:
         return render(request, "accounts/userDetail.html", context)
     
+    #ログインしているときの追加情報
     following = Follower.objects.filter(followed=user, following=request.user).exists()
     context["following"] = following
     if following:
@@ -149,10 +153,15 @@ def ajax_goodtab(request, id):
     context["good_posts"] = good_posts
     context["goods"] = set()
     context["btn_class"] = "btn-primary"
+    comment_num = {}
+    for c in good_posts:
+        comment_num[c.id] = c.post_set.all().count()
+    context["comment_num"] = comment_num
 
     if request.user.is_anonymous:
         return render(request, "accounts/goodTab.html", context)
     
+    #ログインしているときの追加情報
     following = Follower.objects.filter(followed=user, following=request.user).exists()
     context["following"] = following
     if following:

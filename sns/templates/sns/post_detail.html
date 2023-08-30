@@ -91,9 +91,12 @@
                 {% comment %} コメントボタン {% endcomment %}
                 <p style="float:left">
                     コメントする:
-                    <button onClick="clearText()" class="good">
+                    <button id="open_comment" class="good">
                         <i class="fa-solid fa-comment"></i>
                     </button>
+                    <div id="comment_num" style="float:left">
+                        {{ this_comment_num }}
+                    </div>
                 </p>
 
                 {% comment %} イイねボタン {% endcomment %}
@@ -220,14 +223,22 @@
         })
         .done(function(response){
             $("#comment_list").load('{% url "sns:ajax_comment_list" post.id %}', function(){});
+            $('#comment_num').html(response.comment_num);
             $('#comment').collapse('hide');
         });
     });
+
+    $("#open_comment").on('click', function(){
+        $('#comment').collapse('toggle');
+        $('#comment_in').val("")
+    });
+
 {% endblock %}
 
 {% block extrajs %}
 
 <script type="text/javascript">
+
     function clearText(){
         $('#comment').collapse('toggle');
         try{

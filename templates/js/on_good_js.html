@@ -38,10 +38,6 @@ try{
     console.log("error");
 }
 
-function comment(){
-    console.log("aaa");
-}
-
 function clearText(id){
     $('#comment_' + String(id)).collapse('toggle');
     try{
@@ -52,7 +48,6 @@ function clearText(id){
 }
 
 function ajax_comment(post_id){
-        console.log(post_id);
         const url = '{% url "sns:ajaxcomment" %}';
         const data = new URLSearchParams();
         data.append('post_id', String(post_id));
@@ -67,7 +62,9 @@ function ajax_comment(post_id){
         }).then(response  => {
             return response.json();
         }).then(response => {
+            document.getElementById('comment_num_' + String(post_id)).textContent=response["comment_num"];
             $('#comment_' + String(post_id)).collapse('hide');
+
         }).catch(error => {
             console.log(error);
         });
