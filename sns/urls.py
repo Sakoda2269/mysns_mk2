@@ -14,5 +14,7 @@ urlpatterns = [
     path("good/<str:post_id>/<int:isList>/", views.good, name="good"),
     path("ajaxgood/", views.ajax_good, name="ajaxgood"),
     path("good_user/<str:id>/", views.good_user, name="good_user"),
-    path("comment/<str:pk>/", views.Comment.as_view(), name="comment")
+    path("comment/<str:pk>/", views.Comment.as_view(), name="comment"),
+    path("ajaxcomment/", views.ajax_comment, name="ajaxcomment"),
+    path("ajax_comment_list/<str:id>", views.ajax_comment_list, name="ajax_comment_list"),
 ]

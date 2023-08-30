@@ -2,11 +2,6 @@
 
 {% block extra_style %}
     <style>
-        .good, .good:focus, .good:hover {
-            border: none;
-            outline: none;
-            background: none;
-        }
         .w-125px {
                 width: 125px !important;
             }
@@ -36,6 +31,11 @@
         .notlink{
             text-decoration:none !important;
             color:black !important;
+        }
+        .forcomment, .forcomment:active, .forcomment:focus{
+            width: 120px !important;
+            height: 40px !important;
+            min-width: 120px !important;
         }
     </style>
 {% endblock %}
@@ -91,7 +91,7 @@
                 {% comment %} コメントボタン {% endcomment %}
                 <p style="float:left">
                     コメントする:
-                    <button onclick="$('#example-5').collapse('toggle')" class="good">
+                    <button onClick="clearText()" class="good">
                         <i class="fa-solid fa-comment"></i>
                     </button>
                     
@@ -106,7 +106,7 @@
                     {% else %}
                         <button id="ajax-good" class="good">
                             <div class="result">
-                                {% if goods %}
+                                {% if good %}
                                     <i class="fa-solid fa-heart" style="color: #ff0000;"></i>
                                 {% else %}
                                     <i class="fa-regular fa-heart"></i>
@@ -121,9 +121,45 @@
 
                 <hr widht="100%" color="#ddd">
 
-                <div class="collapse" id="example-5">
-                    <div class="card card-body">
-                        Hypertext Markup Language (HTML) is ...
+                {% comment %} コメントフォーム {% endcomment %}
+                <div class="collapse" id="comment">
+                    <div class="card card-body" style="">
+                        {% if user.is_anonymous %}
+                        <div style="text-align:center;">
+                            <h4 >
+                                ログインしてSNSをより楽しみましょう！
+                            </h4>
+                            <br>
+                            <button class="btn btn-primary mx-auto" onClick="location.href='/accounts/login/'"
+                                style="text-align:center; width: 130px !important; height: 40px !important;">ログイン</button>
+                            <br>
+                            <br>
+                            <br>
+                            <a href="{% url 'accounts:signup' %}">
+                                またはアカウントを作成
+                            </a>
+                        </div>
+                        {% else %}
+                            <p>コメント</p>
+                            <form action="" method="post">
+                                <div>
+                                    <textarea id="comment_in" name="comment_in" placeholder="コメントを入力..."
+                                        style="width:100%; height:130px; resize:none;"></textarea>
+                                </div>
+                            </form>
+                            <div>
+                                <div style="float:left; text-align:left;">
+                                    <button class="btn btn-outline-danger forcomment" onClick="$('#comment').collapse('hide');">
+                                        取り消し
+                                    </button>
+                                </div>
+                                <div style="text-align:right;">
+                                    <button class="btn btn-outline-primary forcomment" id="ajax-comment">
+                                        決定
+                                    </button>
+                                </div>
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
 
@@ -133,11 +169,13 @@
                 <br>
                 <h5 style="text-align:center">コメント</h5>
                 <br>
-                {% with posts_include=comments good_mode="1" othergood="1"%}
-                    <div class="mx-auto">
-                        {% include 'post_list_include.html' %}
-                    </div>
-                {% endwith %}
+                <div id = "comment_list">
+                    {% with posts_include=comments good_mode="1" othergood="1"%}
+                        <div class="mx-auto">
+                            {% include 'post_list_include.html' %}
+                        </div>
+                    {% endwith %}
+                </div>
             </div>
         {% endif %}
     </div>
@@ -168,4 +206,37 @@
             $('.num').html(response.num);
         });
     });
+
+    $('#ajax-comment').on('click', function(e){
+        e.preventDefault();
+        let comment = document.getElementById("comment_in").value;
+        $.ajax({
+            'url': '{% url "sns:ajaxcomment" %}',
+            'type': 'POST',
+            'data': {
+                'post_id': '{{ post.id }}',
+                'comment': comment,
+            },
+            'dataType': 'json'
+        })
+        .done(function(response){
+            $("#comment_list").load('{% url "sns:ajax_comment_list" post.id %}', function(){});
+            $('#comment').collapse('hide');
+        });
+    });
+{% endblock %}
+
+{% block extrajs %}
+
+<script type="text/javascript">
+    function clearText(){
+        $('#comment').collapse('toggle');
+        try{
+            document.getElementById("comment_in").value="";
+        }catch(e){
+
+        }
+    }
+</script>
+{% include 'js/on_good_js.html' %}
 {% endblock %}

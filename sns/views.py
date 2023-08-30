@@ -29,12 +29,12 @@ class IndexView(generic.ListView):
         goods = set()
         for g in good:
             goods.add(g.post.id)
+        context["goods"] = goods
         follower = Follower.objects.filter(following=self.request.user)
         follows = set()
         for f in follower:
             follows.add(f.followed)
         follows.add(self.request.user)
-        context["goods"] = goods
         context["following"] = follows
         blocks = set()
         for b in Block.objects.filter(blocker=self.request.user):
@@ -59,7 +59,12 @@ class DetailView(generic.DetailView):
         if self.request.user.is_anonymous:
             return context
         post = context.get("object")
-        context["goods"] = Good.objects.filter(gooder=self.request.user, post=post).exists()
+        good = Good.objects.filter(gooder=self.request.user)
+        goods = set()
+        for g in good:
+            goods.add(g.post.id)
+        context["goods"] = goods
+        context["good"] = Good.objects.filter(gooder=self.request.user, post=post).exists()
         context["is_block"] = Block.objects.filter(blocker=self.request.user, blocked=post.author).exists()
         context["is_blocked"] = Block.objects.filter(blocker=post.author, blocked=self.request.user).exists()
         context["comments"] = Post.objects.filter(parent_post=post, mode=1)
@@ -134,6 +139,30 @@ def ajax_good(request):
     return JsonResponse(context)
 
 
+def ajax_comment(request):
+    post_id = request.POST['post_id']
+    comment = request.POST['comment']
+    post = Post.objects.get(id=post_id)
+    Post.objects.create(
+        author=request.user,
+        detail = comment,
+        mode = 1,
+        parent_post = post
+    )
+    context = {}
+    return JsonResponse(context)
+
+
+def ajax_comment_list(request, id):
+    context = {}
+    context["comments"] = Post.objects.filter(mode=1, parent_post=Post.objects.get(id=id))
+    good = Good.objects.filter(gooder=request.user)
+    goods = set()
+    for g in good:
+        goods.add(g.post.id)
+    context["goods"] = goods
+    return render(request, "sns/comment_list.html", context)
+
 def good_user(request, id):
     post = get_object_or_404(Post, id=id)
     good_user = Good.objects.filter(post=post)
@@ -160,4 +189,3 @@ class Comment(generic.edit.CreateView):
         id = self.kwargs["pk"]
         form.instance.parent_post = get_object_or_404(Post, id=id)
         return super(Comment, self).form_valid(form)
-
