@@ -10,6 +10,8 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import UserPassesTestMixin
+import json
+
 
 class IndexView(generic.ListView):
     queryset = Post.objects.filter(mode=0)

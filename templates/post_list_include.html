@@ -37,8 +37,7 @@
                         {% comment %} コメントボタン {% endcomment %}
                         <p style="float:left">
                             コメントする:
-                            <button data-toggle="collapse" type="button" data-target="#collapseComment"
-                                aria-expanded="false" aria-controls="collapseComment" class="good on-a">
+                            <button onClick="clearText('{{ postin.id }}')" class="good on-a">
                                 <i class="fa-solid fa-comment"></i>
                             </button>
                         </p>
@@ -68,9 +67,47 @@
                 </div>
             </a>
 
-            <div class="collapse" id="collapseComment">
-                コメントしよう！
-            </div>
+            {% comment %} コメントフォーム {% endcomment %}
+                <div class="collapse" id="comment_{{ postin.id }}">
+                    <div class="card card-body" style="">
+                        {% if user.is_anonymous %}
+                        <div style="text-align:center;">
+                            <h4 >
+                                ログインしてSNSをより楽しみましょう！
+                            </h4>
+                            <br>
+                            <button class="btn btn-primary mx-auto" onClick="location.href='/accounts/login/'"
+                                style="text-align:center; width: 130px !important; height: 40px !important;">ログイン</button>
+                            <br>
+                            <br>
+                            <br>
+                            <a href="{% url 'accounts:signup' %}">
+                                またはアカウントを作成
+                            </a>
+                        </div>
+                        {% else %}
+                            <p>コメント</p>
+                            <form action="" method="post">
+                                <div>
+                                    <textarea id="comment_in_{{ postin.id }}" name="comment_in_{{ postin.id }}" placeholder="コメントを入力..."
+                                        style="width:100%; height:130px; resize:none;"></textarea>
+                                </div>
+                            </form>
+                            <div>
+                                <div style="float:left; text-align:left;">
+                                    <button class="btn btn-outline-danger forcomment" onClick="$('#comment').collapse('hide');">
+                                        取り消し
+                                    </button>
+                                </div>
+                                <div style="text-align:right;">
+                                    <button class="btn btn-outline-primary forcomment" onClick="ajax_comment('{{ postin.id }}')">
+                                        決定
+                                    </button>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
 
         </div>
         <br>

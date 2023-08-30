@@ -3,8 +3,6 @@ try{
     let ids = {};
 
     function on_good(post_id, mode){
-        
-        console.log(post_id);
         const url = '{% url "sns:ajaxgood" %}';
         let modes = mode.split('');
         fetch(url, {
@@ -43,5 +41,36 @@ try{
 function comment(){
     console.log("aaa");
 }
+
+function clearText(id){
+    $('#comment_' + String(id)).collapse('toggle');
+    try{
+        document.getElementById("comment_in_" + String(id)).value="";
+    }catch(e){
+
+    }
+}
+
+function ajax_comment(post_id){
+        console.log(post_id);
+        const url = '{% url "sns:ajaxcomment" %}';
+        const data = new URLSearchParams();
+        data.append('post_id', String(post_id));
+        data.append('comment', document.getElementById("comment_in_" + String(post_id)).value);
+        fetch(url, {
+            method: 'POST',
+            headers:{
+                'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
+                'X-CSRFToken': '{{ csrf_token }}',
+            },
+            body: data,
+        }).then(response  => {
+            return response.json();
+        }).then(response => {
+            $('#comment_' + String(post_id)).collapse('hide');
+        }).catch(error => {
+            console.log(error);
+        });
+    }
 
 </script>
