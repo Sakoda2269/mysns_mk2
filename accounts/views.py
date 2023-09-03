@@ -32,9 +32,17 @@ def user_detail(request, id):
     context["good_posts"] = good_posts
     context["btn_class"] = "btn-primary"
     comment_num = {}
+    top_comment = {}
     for c in post:
         comment_num[c.id] = c.post_set.all().count()
+        try:
+            tmp = c.post_set.all()[0]
+            top_comment[c.id] = tmp
+            comment_num[tmp.id] = tmp.post_set.all().count()
+        except Exception:
+            pass
     context["comment_num"] = comment_num
+    context["top_comment"] = top_comment
     if request.user.is_anonymous:
         return render(request, "accounts/userDetail.html", context)
     

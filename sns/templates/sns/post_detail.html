@@ -74,7 +74,13 @@
 
                 <div>
                     <h3 style="text-align:center">
-                        {{ post.title }}
+                        {% if post.mode == 1 %}
+                            <a href="{% url 'sns:post' post.parent_post.id %}" class="notlink">
+                                {{ post.title }}
+                            </a>
+                        {% else %}
+                            {{ post.title }}
+                        {% endif %}
                     </h3>
                     <div style="text-align:right">
                         {{ post.created_at }}

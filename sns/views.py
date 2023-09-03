@@ -26,9 +26,17 @@ class IndexView(generic.ListView):
             comments[c.parent_post.id].append(c)
         context["post_comments"] = comments
         comment_num = {}
+        top_comment = {}
         for p in self.queryset:
             comment_num[p.id] = p.post_set.all().count()
+            try:
+                tmp = p.post_set.all()[0]
+                top_comment[p.id] = tmp
+                comment_num[tmp.id] = tmp.post_set.all().count()
+            except Exception:
+                pass
         context["comment_num"] = comment_num
+        context["top_comment"] = top_comment
         if self.request.user.is_anonymous:
             return context
         
@@ -68,9 +76,17 @@ class DetailView(generic.DetailView):
         comments = Post.objects.filter(parent_post=post, mode=1)
         context["comments"] = comments
         comment_num = {}
+        top_comment = {}
         for c in comments:
             comment_num[c.id] = c.post_set.all().count()
+            try:
+                tmp = c.post_set.all()[0]
+                top_comment[c.id] = tmp
+                comment_num[tmp.id] = tmp.post_set.all().count()
+            except Exception:
+                pass
         context["comment_num"] = comment_num
+        context["top_comment"] = top_comment
         context["this_comment_num"] = post.post_set.all().count()
         if self.request.user.is_anonymous:
             return context
@@ -159,9 +175,12 @@ def ajax_comment(request):
     post_id = request.POST['post_id']
     comment = request.POST['comment']
     post = Post.objects.get(id=post_id)
-    post.save()
+    post_title = post.title + "のコメント",
+    if post.mode == 1:
+        post_title = post.title
     Post.objects.create(
         author=request.user,
+        title=post_title,
         detail = comment,
         mode = 1,
         parent_post = post

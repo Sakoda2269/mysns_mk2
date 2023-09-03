@@ -2,118 +2,25 @@
 {% load custom_filter %}
 {% comment %} postin:投稿群 good_mode:複数タブがある場合 other_good:複数タブがある場合、ほかのやつ {% endcomment %}
 {% for postin in posts_include reversed %}
-    {% if post.author in blocks or post.author in blocked or post.author in mutes%}
+    {% if postin.author in blocks or postin.author in blocked or postin.author in mutes%}
     {% else %}
-        <div class="card w-150px mx-auto clearfix" style="position:relative;">
-            <a href="{% url 'sns:post' postin.pk %}" style="position:absolute;inset:0;">
-                {% comment %} カードヘッダ {% endcomment %}
-                <div class="card-header bg-secondary h-50px clearfix" style="display:flex; justify-content:center;postition:relative;">
-                    <h5 style="position:absolute; left:1rem;">
-                        <a href="{% url 'accounts:user' postin.author.id %}" class="on-a title-link">
-                            {{ postin.author }}
-                        </a>
-                    </h5>
-                    <h5 style="text-align:center; display:table-cell;">
-                        <a href="{% url 'sns:post' postin.id %}" class="on-a title-link">
-                            {% if postin.mode != 1 %}
-                                {{ postin.title | truncatechars:20 }}
-                            {% endif %}
-                        </a>
-                    </h5>
-                    <p style="position:absolute; right:1rem; color:white">
-                        {{ postin.created_at }}
-                    </p>
-                </div>
+        {% with postcard=postin %}
+            {% include 'post_card_include.html' %}
+        {% endwith %}
 
-                {% comment %} カードボディ {% endcomment %}
-                <div class="card-body detail clearfix">
-                    <p class="card-text">
-                        {{ postin.detail|linebreaks }}
-                    </p>
-                </div>
-
-                {% comment %} カードフッタ {% endcomment %}
-                <div class="card-footer h-50px text-right clearfix" style="padding-top:0">
-                    <div style="display:inline">
-                        {% comment %} コメントボタン {% endcomment %}
-                        <p style="float:left;">
-                            コメントする:
-                            <button onClick="clearText('{{ postin.id }}')" class="good on-a">
-                                <i class="fa-solid fa-comment"></i>
-                            </button>
-                            <div id="comment_num_{{ postin.id }}" style="float:left;">
-                                {{ comment_num|get_value:postin.id }}
-                            </div>
-                        </p>
-                    </div>
-
-                    <div>
-                        {% comment %} イイねボタン {% endcomment %}
-                        {% if user.is_anonymous %}
-                            <button onClick="location.href='{% url 'sns:good' postin.id 1 %}'" class="good on-a">
-                                <i class="fa-regular fa-heart"></i>
-                            </button>
-                        {% else %}
-                            <button onClick="on_good('{{ postin.id }}', '{{ othergood }}')" class="good on-a">
-                                <div id="{{ postin.id }}_{{ good_mode }}" style="display:inline;">
-                                    {% if postin.id in goods %}
-                                        <i class="fa-solid fa-heart" style="color: #ff0000;"></i>
-                                    {% else %}
-                                        <i class="fa-regular fa-heart"></i>
-                                    {% endif %}
-                                </div>
-                            </button>
-                        {% endif %}
-                        <a href="{% url 'sns:good_user' postin.id %}" class="notlink on-a">
-                            <div id="num_{{ postin.id }}_{{ good_mode }}" style="display:inline;size:4;">:{{ postin.good_num }}イイね</div> 
-                        </a>
-                    </div>
-                </div>
-            </a>
-
-            {% comment %} コメントフォーム {% endcomment %}
-                <div class="collapse" id="comment_{{ postin.id }}">
-                    <div class="card card-body" style="">
-                        {% if user.is_anonymous %}
-                        <div style="text-align:center;">
-                            <h4 >
-                                ログインしてSNSをより楽しみましょう！
-                            </h4>
-                            <br>
-                            <button class="btn btn-primary mx-auto" onClick="location.href='/accounts/login/'"
-                                style="text-align:center; width: 130px !important; height: 40px !important;">ログイン</button>
-                            <br>
-                            <br>
-                            <br>
-                            <a href="{% url 'accounts:signup' %}">
-                                またはアカウントを作成
-                            </a>
-                        </div>
-                        {% else %}
-                            <p>コメント</p>
-                            <form action="" method="post">
-                                <div>
-                                    <textarea id="comment_in_{{ postin.id }}" name="comment_in_{{ postin.id }}" placeholder="コメントを入力..."
-                                        style="width:100%; height:130px; resize:none;"></textarea>
-                                </div>
-                            </form>
-                            <div>
-                                <div style="float:left; text-align:left;">
-                                    <button class="btn btn-outline-danger forcomment" onClick="$('#comment').collapse('hide');">
-                                        取り消し
-                                    </button>
-                                </div>
-                                <div style="text-align:right;">
-                                    <button class="btn btn-outline-primary forcomment" onClick="ajax_comment('{{ postin.id }}')">
-                                        決定
-                                    </button>
-                                </div>
-                            </div>
-                        {% endif %}
-                    </div>
-                </div>
-
-        </div>
+        {% comment %} コメント表示 {% endcomment %}
+        {% with commentnum=comment_num|get_value:postin.id %}
+            {% if commentnum > 0 %}
+                <div style="text-align:center;">|</div>
+                <div style="text-align:center;">|</div>
+                <div style="text-align:center;">|</div>
+                {% with postcard=top_comment|get_value:postin.id %}
+                    {% include 'post_card_include.html' %}
+                {% endwith %}
+            {% endif %}
+        {% endwith %}
+        <br>
+        <br>
         <br>
     {% endif %}
 {% empty %}

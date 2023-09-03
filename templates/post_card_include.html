@@ -1,0 +1,111 @@
+{% load custom_filter %}
+<div class="card w-150px mx-auto clearfix" style="position:relative;">
+    <a href="{% url 'sns:post' postcard.pk %}" style="position:absolute;inset:0;">
+        {% comment %} カードヘッダ {% endcomment %}
+        <div class="card-header bg-secondary h-50px clearfix" style="display:flex; justify-content:center;postition:relative;">
+            <h5 style="position:absolute; left:1rem;">
+                <a href="{% url 'accounts:user' postcard.author.id %}" class="on-a title-link">
+                    {{ postcard.author }}
+                </a>
+            </h5>
+            <h5 style="text-align:center; display:table-cell;">
+                <a href="{% url 'sns:post' postcard.id %}" class="on-a title-link">
+                    {% if postcard.mode != 1 %}
+                        {{ postcard.title | truncatechars:20 }}
+                    {% endif %}
+                </a>
+            </h5>
+            <p style="position:absolute; right:1rem; color:white">
+                {{ postcard.created_at }}
+            </p>
+        </div>
+
+        {% comment %} カードボディ {% endcomment %}
+        <div class="card-body detail clearfix">
+            <p class="card-text">
+                {{ postcard.detail|linebreaks }}
+            </p>
+        </div>
+
+        {% comment %} カードフッタ {% endcomment %}
+        <div class="card-footer h-50px text-right clearfix" style="padding-top:0">
+            <div style="display:inline">
+                {% comment %} コメントボタン {% endcomment %}
+                <p style="float:left;">
+                    コメントする:
+                    <button onClick="clearText('{{ postcard.id }}')" class="good on-a">
+                        <i class="fa-solid fa-comment"></i>
+                    </button>
+                    <div id="comment_num_{{ postcard.id }}" style="float:left;">
+                        {{ comment_num|get_value:postcard.id }}
+                    </div>
+                </p>
+            </div>
+
+            <div>
+                {% comment %} イイねボタン {% endcomment %}
+                {% if user.is_anonymous %}
+                    <button onClick="location.href='{% url 'sns:good' postcard.id 1 %}'" class="good on-a">
+                        <i class="fa-regular fa-heart"></i>
+                    </button>
+                {% else %}
+                    <button onClick="on_good('{{ postcard.id }}', '{{ othergood }}')" class="good on-a">
+                        <div id="{{ postcard.id }}_{{ good_mode }}" style="display:inline;">
+                            {% if postcard.id in goods %}
+                                <i class="fa-solid fa-heart" style="color: #ff0000;"></i>
+                            {% else %}
+                                <i class="fa-regular fa-heart"></i>
+                            {% endif %}
+                        </div>
+                    </button>
+                {% endif %}
+                <a href="{% url 'sns:good_user' postcard.id %}" class="notlink on-a">
+                    <div id="num_{{ postcard.id }}_{{ good_mode }}" style="display:inline;size:4;">:{{ postcard.good_num }}イイね</div> 
+                </a>
+            </div>
+        </div>
+    </a>
+
+    {% comment %} コメントフォーム {% endcomment %}
+        <div class="collapse" id="comment_{{ postcard.id }}">
+            <div class="card card-body" style="">
+                {% if user.is_anonymous %}
+                <div style="text-align:center;">
+                    <h4 >
+                        ログインしてSNSをより楽しみましょう！
+                    </h4>
+                    <br>
+                    <button class="btn btn-primary mx-auto" onClick="location.href='/accounts/login/'"
+                        style="text-align:center; width: 130px !important; height: 40px !important;">ログイン</button>
+                    <br>
+                    <br>
+                    <br>
+                    <a href="{% url 'accounts:signup' %}">
+                        またはアカウントを作成
+                    </a>
+                </div>
+                {% else %}
+                    <p>コメント</p>
+                    <form action="" method="post">
+                        <div>
+                            <textarea id="comment_in_{{ postcard.id }}" name="comment_in_{{ postcard.id }}" placeholder="コメントを入力..."
+                                style="width:100%; height:130px; resize:none;"></textarea>
+                        </div>
+                    </form>
+                    <div>
+                        <div style="float:left; text-align:left;">
+                            <button class="btn btn-outline-danger forcomment" onClick="$('#comment').collapse('hide');">
+                                取り消し
+                            </button>
+                        </div>
+                        <div style="text-align:right;">
+                            <button class="btn btn-outline-primary forcomment" onClick="ajax_comment('{{ postcard.id }}')">
+                                決定
+                            </button>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+</div>
