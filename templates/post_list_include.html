@@ -7,18 +7,6 @@
         {% with postcard=postin %}
             {% include 'post_card_include.html' %}
         {% endwith %}
-
-        {% comment %} コメント表示 {% endcomment %}
-        {% with commentnum=comment_num|get_value:postin.id %}
-            {% if commentnum > 0 %}
-                <div style="text-align:center;">|</div>
-                <div style="text-align:center;">|</div>
-                <div style="text-align:center;">|</div>
-                {% with postcard=top_comment|get_value:postin.id %}
-                    {% include 'post_card_include.html' %}
-                {% endwith %}
-            {% endif %}
-        {% endwith %}
         <br>
         <br>
         <br>

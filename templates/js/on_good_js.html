@@ -47,6 +47,12 @@ function clearText(id){
     }
 }
 
+
+function openComment(id){
+    $('#commentList_' + String(id)).collapse('toggle');
+}
+
+
 function ajax_comment(post_id){
         const url = '{% url "sns:ajaxcomment" %}';
         const data = new URLSearchParams();

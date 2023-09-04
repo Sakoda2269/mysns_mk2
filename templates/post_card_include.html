@@ -28,21 +28,31 @@
         </div>
 
         {% comment %} カードフッタ {% endcomment %}
-        <div class="card-footer h-50px text-right clearfix" style="padding-top:0">
+        <div class="card-footer h-50px text-right clearfix" style="display:flex;justify-content:center;postition:relative;">
             <div style="display:inline">
                 {% comment %} コメントボタン {% endcomment %}
-                <p style="float:left;">
+                <p style="position:absolute;left:1rem;">
                     コメントする:
                     <button onClick="clearText('{{ postcard.id }}')" class="good on-a">
                         <i class="fa-solid fa-comment"></i>
                     </button>
-                    <div id="comment_num_{{ postcard.id }}" style="float:left;">
+                    <div id="comment_num_{{ postcard.id }}" style="position:absolute;left:9rem;">
                         {{ comment_num|get_value:postcard.id }}
                     </div>
                 </p>
             </div>
 
             <div>
+            {% with num=comment_num|get_value:postcard.id %}
+            {% if num > 0 %}
+                <button onClick="openComment('{{ postcard.id }}_{{ good_mode }}')" class="good on-a">
+                    コメントを見る
+                </button>
+            {% endif %}
+            {% endwith %}
+            </div>
+
+            <div style="position:absolute;right:1rem;">
                 {% comment %} イイねボタン {% endcomment %}
                 {% if user.is_anonymous %}
                     <button onClick="location.href='{% url 'sns:good' postcard.id 1 %}'" class="good on-a">
@@ -107,5 +117,17 @@
                 {% endif %}
             </div>
         </div>
-
 </div>
+
+{% comment %} コメントリスト {% endcomment %}
+{% with num=comment_num|get_value:postcard.id %}
+{% if num > 0 %}
+    <div class="collapse" id="commentList_{{ postcard.id }}_{{ good_mode }}">
+        {% for comment in top_comment|get_value:postcard.id %}
+            {% with postcard=comment %}
+                {% include 'post_card_include.html' %}
+            {% endwith %}
+        {% endfor %}
+    </div>
+{% endif %}
+{% endwith %}
