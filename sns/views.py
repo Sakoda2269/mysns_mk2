@@ -10,6 +10,7 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import UserPassesTestMixin
+from mysns.lib import comment_num_count
 import json
 
 
@@ -28,11 +29,10 @@ class IndexView(generic.ListView):
         comment_num = {}
         top_comment = {}
         for p in self.queryset:
-            comment_num[p.id] = p.post_set.all().count()
+            comment_num_count(p, comment_num)
             try:
                 tmp = p.post_set.all()[0]
                 top_comment[p.id] = tmp
-                comment_num[tmp.id] = tmp.post_set.all().count()
             except Exception:
                 pass
         context["comment_num"] = comment_num
@@ -77,12 +77,11 @@ class DetailView(generic.DetailView):
         context["comments"] = comments
         comment_num = {}
         top_comment = {}
+        comment_num_count(post, comment_num)
         for c in comments:
-            comment_num[c.id] = c.post_set.all().count()
             try:
                 tmp = c.post_set.all()[0]
                 top_comment[c.id] = tmp
-                comment_num[tmp.id] = tmp.post_set.all().count()
             except Exception:
                 pass
         context["comment_num"] = comment_num

@@ -6,6 +6,7 @@ from .models import CustomUser, Follower, Block, Mute
 from sns.models import Post, Good
 from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
+from mysns.lib import comment_num_count
 
 
 class SignUpView(generic.CreateView):
@@ -31,21 +32,19 @@ def user_detail(request, id):
     gooding = Good.objects.filter(gooder=user)
     for g in gooding:
         good_posts.append(g.post)
-        comment_num[g.post.id] = g.post.post_set.all().count()
+        comment_num_count(g.post, comment_num)
         try:
             tmp = g.post.post_set.all()[0]
             top_comment[g.post.id] = tmp
-            comment_num[tmp.id] = tmp.post_set.all().count()
         except Exception:
             pass
     context["good_posts"] = good_posts
     context["btn_class"] = "btn-primary"
     for c in post:
-        comment_num[c.id] = c.post_set.all().count()
+        comment_num_count(c, comment_num)
         try:
             tmp = c.post_set.all()[0]
             top_comment[c.id] = tmp
-            comment_num[tmp.id] = tmp.post_set.all().count()
         except Exception:
             pass
     context["comment_num"] = comment_num
@@ -71,6 +70,71 @@ def user_detail(request, id):
     context["is_mute"] = Mute.objects.filter(muter=request.user, muted=user).exists()
     return render(request, "accounts/userDetail.html", context)
 
+
+def ajax_goodtab(request, id):
+    context = {}
+    user = get_object_or_404(CustomUser, pk=id)
+    post = Post.objects.filter(author=user)
+    following_num = Follower.objects.filter(following=user).count()
+    followed_num = Follower.objects.filter(followed=user).count()
+    context["userDetail"] = user
+    context["posts"] = post
+    context["following"] = False
+    context["following_num"] = following_num
+    context["followed_num"] = followed_num
+    good_posts = []
+    comment_num = {}
+    top_comment = {}
+    gooding = Good.objects.filter(gooder=user)
+    for g in gooding:
+        good_posts.append(g.post)
+        comment_num_count(g.post, comment_num)
+        try:
+            tmp = g.post.post_set.all()[0]
+            top_comment[g.post.id] = tmp
+        except Exception:
+            pass
+    context["good_posts"] = good_posts
+    context["btn_class"] = "btn-primary"
+    for c in post:
+        comment_num_count(c, comment_num)
+        try:
+            tmp = c.post_set.all()[0]
+            top_comment[c.id] = tmp
+        except Exception:
+            pass
+    context["comment_num"] = comment_num
+    context["top_comment"] = top_comment
+
+    if request.user.is_anonymous:
+        return render(request, "accounts/goodTab.html", context)
+    
+    #ログインしているときの追加情報
+    following = Follower.objects.filter(followed=user, following=request.user).exists()
+    context["following"] = following
+    if following:
+        button_class = "btn-warning"
+    else :
+        button_class = "btn-primary"
+    context["btn_class"] = button_class
+    good = Good.objects.filter(gooder=request.user)
+    goods = set()
+    for g in good:
+        goods.add(g.post.id)
+    context["goods"] = goods
+    blocks = set()
+    for b in Block.objects.filter(blocker=request.user):
+        blocks.add(b.blocked)
+    context["blocks"] = blocks
+    blocked = set()
+    for b in Block.objects.filter(blocked=request.user):
+        blocked.add(b.blocker)
+    context["blocked"] = blocked
+    mutes = set()
+    for m in Mute.objects.filter(muter=request.user):
+        mutes.add(m.muted)
+    context["mutes"] = mutes
+    return render(request, "accounts/goodTab.html", context)
 
 @login_required
 def follow(request, followed_id):
@@ -150,70 +214,5 @@ def follower_list(request, id, follow_type):
     return render(request, "accounts/followerList.html", context)
 
 
-def ajax_goodtab(request, id):
-    context = {}
-    user = get_object_or_404(CustomUser, pk=id)
-    post = Post.objects.filter(author=user)
-    following_num = Follower.objects.filter(following=user).count()
-    followed_num = Follower.objects.filter(followed=user).count()
-    context["userDetail"] = user
-    context["posts"] = post
-    context["following"] = False
-    context["following_num"] = following_num
-    context["followed_num"] = followed_num
-    good_posts = []
-    comment_num = {}
-    top_comment = {}
-    gooding = Good.objects.filter(gooder=user)
-    for g in gooding:
-        good_posts.append(g.post)
-        comment_num[g.post.id] = g.post.post_set.all().count()
-        try:
-            tmp = g.post.post_set.all()[0]
-            top_comment[g.post.id] = tmp
-            comment_num[tmp.id] = tmp.post_set.all().count()
-        except Exception:
-            pass
-    context["good_posts"] = good_posts
-    context["btn_class"] = "btn-primary"
-    for c in post:
-        comment_num[c.id] = c.post_set.all().count()
-        try:
-            tmp = c.post_set.all()[0]
-            top_comment[c.id] = tmp
-            comment_num[tmp.id] = tmp.post_set.all().count()
-        except Exception:
-            pass
-    context["comment_num"] = comment_num
-    context["top_comment"] = top_comment
 
-    if request.user.is_anonymous:
-        return render(request, "accounts/goodTab.html", context)
-    
-    #ログインしているときの追加情報
-    following = Follower.objects.filter(followed=user, following=request.user).exists()
-    context["following"] = following
-    if following:
-        button_class = "btn-warning"
-    else :
-        button_class = "btn-primary"
-    context["btn_class"] = button_class
-    good = Good.objects.filter(gooder=request.user)
-    goods = set()
-    for g in good:
-        goods.add(g.post.id)
-    context["goods"] = goods
-    blocks = set()
-    for b in Block.objects.filter(blocker=request.user):
-        blocks.add(b.blocked)
-    context["blocks"] = blocks
-    blocked = set()
-    for b in Block.objects.filter(blocked=request.user):
-        blocked.add(b.blocker)
-    context["blocked"] = blocked
-    mutes = set()
-    for m in Mute.objects.filter(muter=request.user):
-        mutes.add(m.muted)
-    context["mutes"] = mutes
-    return render(request, "accounts/goodTab.html", context)
 

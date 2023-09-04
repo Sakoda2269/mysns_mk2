@@ -41,6 +41,7 @@
 {% endblock %}
 
 {% block content %}
+{% load custom_filter %}
     <div>
         {% if is_block %}
             <br>
@@ -101,7 +102,7 @@
                         <i class="fa-solid fa-comment"></i>
                     </button>
                     <div id="comment_num" style="float:left">
-                        {{ this_comment_num }}
+                        {{ comment_num|get_value:post.id }}
                     </div>
                 </p>
 
@@ -190,6 +191,7 @@
 {% endblock %}
 
 {% block extra_ajax %}
+{% comment %} いいね {% endcomment %}
     let myid;
     $('#ajax-good').on('click', function(e) {
         e.preventDefault();
@@ -214,7 +216,8 @@
             $('.num').html(response.num);
         });
     });
-
+    
+{% comment %} コメント {% endcomment %}
     $('#ajax-comment').on('click', function(e){
         e.preventDefault();
         let comment = document.getElementById("comment_in").value;
