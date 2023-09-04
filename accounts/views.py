@@ -32,19 +32,12 @@ def user_detail(request, id):
     gooding = Good.objects.filter(gooder=user)
     for g in gooding:
         good_posts.append(g.post)
-        comment_num_count(g.post, comment_num)
-        try:
-            tmp = g.post.post_set.all()[0]
-            top_comment[g.post.id] = tmp
-        except Exception:
-            pass
     context["good_posts"] = good_posts
     context["btn_class"] = "btn-primary"
     for c in post:
         comment_num_count(c, comment_num)
         try:
-            tmp = c.post_set.all()[0]
-            top_comment[c.id] = tmp
+            top_comment[c.id] = c.post_set.all()
         except Exception:
             pass
     context["comment_num"] = comment_num
@@ -90,8 +83,7 @@ def ajax_goodtab(request, id):
         good_posts.append(g.post)
         comment_num_count(g.post, comment_num)
         try:
-            tmp = g.post.post_set.all()[0]
-            top_comment[g.post.id] = tmp
+            top_comment[g.post.id] = g.post.post_set.all()
         except Exception:
             pass
     context["good_posts"] = good_posts
@@ -99,8 +91,7 @@ def ajax_goodtab(request, id):
     for c in post:
         comment_num_count(c, comment_num)
         try:
-            tmp = c.post_set.all()[0]
-            top_comment[c.id] = tmp
+            top_comment[c.id] = c.post_set.all()
         except Exception:
             pass
     context["comment_num"] = comment_num

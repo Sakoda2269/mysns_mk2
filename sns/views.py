@@ -31,8 +31,7 @@ class IndexView(generic.ListView):
         for p in self.queryset:
             comment_num_count(p, comment_num)
             try:
-                tmp = p.post_set.all()[0]
-                top_comment[p.id] = tmp
+                top_comment[p.id] = p.post_set.all()
             except Exception:
                 pass
         context["comment_num"] = comment_num
@@ -80,8 +79,7 @@ class DetailView(generic.DetailView):
         comment_num_count(post, comment_num)
         for c in comments:
             try:
-                tmp = c.post_set.all()[0]
-                top_comment[c.id] = tmp
+                top_comment[c.id] = c.post_set.all()
             except Exception:
                 pass
         context["comment_num"] = comment_num
