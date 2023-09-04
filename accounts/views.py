@@ -26,13 +26,20 @@ def user_detail(request, id):
     context["following_num"] = following_num
     context["followed_num"] = followed_num
     good_posts = []
+    comment_num = {}
+    top_comment = {}
     gooding = Good.objects.filter(gooder=user)
     for g in gooding:
         good_posts.append(g.post)
+        comment_num[g.post.id] = g.post.post_set.all().count()
+        try:
+            tmp = g.post.post_set.all()[0]
+            top_comment[g.post.id] = tmp
+            comment_num[tmp.id] = tmp.post_set.all().count()
+        except Exception:
+            pass
     context["good_posts"] = good_posts
     context["btn_class"] = "btn-primary"
-    comment_num = {}
-    top_comment = {}
     for c in post:
         comment_num[c.id] = c.post_set.all().count()
         try:
@@ -155,16 +162,30 @@ def ajax_goodtab(request, id):
     context["following_num"] = following_num
     context["followed_num"] = followed_num
     good_posts = []
+    comment_num = {}
+    top_comment = {}
     gooding = Good.objects.filter(gooder=user)
     for g in gooding:
         good_posts.append(g.post)
+        comment_num[g.post.id] = g.post.post_set.all().count()
+        try:
+            tmp = g.post.post_set.all()[0]
+            top_comment[g.post.id] = tmp
+            comment_num[tmp.id] = tmp.post_set.all().count()
+        except Exception:
+            pass
     context["good_posts"] = good_posts
-    context["goods"] = set()
     context["btn_class"] = "btn-primary"
-    comment_num = {}
-    for c in good_posts:
+    for c in post:
         comment_num[c.id] = c.post_set.all().count()
+        try:
+            tmp = c.post_set.all()[0]
+            top_comment[c.id] = tmp
+            comment_num[tmp.id] = tmp.post_set.all().count()
+        except Exception:
+            pass
     context["comment_num"] = comment_num
+    context["top_comment"] = top_comment
 
     if request.user.is_anonymous:
         return render(request, "accounts/goodTab.html", context)
