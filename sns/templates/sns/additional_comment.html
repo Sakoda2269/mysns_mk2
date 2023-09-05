@@ -1,0 +1,8 @@
+{% load custom_filter %}
+<div>
+{% for comment in top_comment|get_value:postcard.id %}
+    {% with postcard=comment %}
+        {% include 'post_card_include.html' %}
+    {% endwith %}
+{% endfor %}
+</div>

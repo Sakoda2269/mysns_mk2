@@ -10,7 +10,7 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import UserPassesTestMixin
-from mysns.lib import comment_num_count
+from mysns import lib
 import json
 
 
@@ -19,50 +19,21 @@ class IndexView(generic.ListView):
 
     def get_context_data(self, *args, **kwargs: Any):
         context = super().get_context_data(*args, **kwargs)
-        comments = {}
-        com = Post.objects.filter(mode=1)
-        for c in com:
-            if c.parent_post.id not in comments:
-                comments[c.parent_post.id] = []
-            comments[c.parent_post.id].append(c)
-        context["post_comments"] = comments
-        comment_num = {}
-        top_comment = {}
-        for p in self.queryset:
-            comment_num_count(p, comment_num)
-            try:
-                top_comment[p.id] = p.post_set.all()
-            except Exception:
-                pass
-        context["comment_num"] = comment_num
-        context["top_comment"] = top_comment
+        lib.list_comment(context, self.queryset)
+        
         if self.request.user.is_anonymous:
             return context
         
         #ログインしている場合の追加情報
-        good = Good.objects.filter(gooder=self.request.user)
-        goods = set()
-        for g in good:
-            goods.add(g.post.id)
-        context["goods"] = goods
+        # フォローしているユーザー
         follower = Follower.objects.filter(following=self.request.user)
         follows = set()
         for f in follower:
             follows.add(f.followed)
         follows.add(self.request.user)
         context["following"] = follows
-        blocks = set()
-        for b in Block.objects.filter(blocker=self.request.user):
-            blocks.add(b.blocked)
-        context["blocks"] = blocks
-        blocked = set()
-        for b in Block.objects.filter(blocked=self.request.user):
-            blocked.add(b.blocker)
-        context["blocked"] = blocked
-        mutes = set()
-        for m in Mute.objects.filter(muter=self.request.user):
-            mutes.add(m.muted)
-        context["mutes"] = mutes
+        
+        lib.user_info(context, self.request.user)
         return context  
     
 
@@ -72,16 +43,18 @@ class DetailView(generic.DetailView):
     def get_context_data(self, *args, **kwargs: Any):
         context = super().get_context_data(*args, **kwargs)
         post = context.get("object")
+        # その投稿に対するコメント
         comments = Post.objects.filter(parent_post=post, mode=1)
         context["comments"] = comments
-        comment_num = {}
-        top_comment = {}
-        comment_num_count(post, comment_num)
+        
+        comment_num = {}#その投稿に対するコメント数
+        top_comment = {}#その当行に対するコメント
+        lib.comment_num_count(post, comment_num)
         for c in comments:
             try:
                 top_comment[c.id] = c.post_set.all()
             except Exception:
-                pass
+                top_comment[c.id] = []
         context["comment_num"] = comment_num
         context["top_comment"] = top_comment
         context["this_comment_num"] = post.post_set.all().count()
@@ -89,12 +62,14 @@ class DetailView(generic.DetailView):
             return context
         
         #ログインしているときの追加情報
+        #その投稿をイイねしているか
         good = Good.objects.filter(gooder=self.request.user)
         goods = set()
         for g in good:
             goods.add(g.post.id)
         context["goods"] = goods
         context["good"] = Good.objects.filter(gooder=self.request.user, post=post).exists()
+        #ブロック関連
         context["is_block"] = Block.objects.filter(blocker=self.request.user, blocked=post.author).exists()
         context["is_blocked"] = Block.objects.filter(blocker=post.author, blocked=self.request.user).exists()
         return context

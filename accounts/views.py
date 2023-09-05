@@ -6,7 +6,7 @@ from .models import CustomUser, Follower, Block, Mute
 from sns.models import Post, Good
 from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
-from mysns.lib import comment_num_count
+from mysns import lib
 
 
 class SignUpView(generic.CreateView):
@@ -19,29 +19,18 @@ def user_detail(request, id):
     context = {}
     user = get_object_or_404(CustomUser, pk=id)
     post = Post.objects.filter(author=user)
-    following_num = Follower.objects.filter(following=user).count()
-    followed_num = Follower.objects.filter(followed=user).count()
     context["userDetail"] = user
     context["posts"] = post
+    #フォロー人数とフォロワー人数
+    following_num = Follower.objects.filter(following=user).count()
+    followed_num = Follower.objects.filter(followed=user).count()
     context["following"] = False
     context["following_num"] = following_num
     context["followed_num"] = followed_num
-    good_posts = []
-    comment_num = {}
-    top_comment = {}
-    gooding = Good.objects.filter(gooder=user)
-    for g in gooding:
-        good_posts.append(g.post)
-    context["good_posts"] = good_posts
     context["btn_class"] = "btn-primary"
-    for c in post:
-        comment_num_count(c, comment_num)
-        try:
-            top_comment[c.id] = c.post_set.all()
-        except Exception:
-            pass
-    context["comment_num"] = comment_num
-    context["top_comment"] = top_comment
+
+    lib.list_comment(context, post)
+    
     if request.user.is_anonymous:
         return render(request, "accounts/userDetail.html", context)
     
@@ -67,65 +56,18 @@ def user_detail(request, id):
 def ajax_goodtab(request, id):
     context = {}
     user = get_object_or_404(CustomUser, pk=id)
-    post = Post.objects.filter(author=user)
-    following_num = Follower.objects.filter(following=user).count()
-    followed_num = Follower.objects.filter(followed=user).count()
-    context["userDetail"] = user
-    context["posts"] = post
-    context["following"] = False
-    context["following_num"] = following_num
-    context["followed_num"] = followed_num
-    good_posts = []
-    comment_num = {}
-    top_comment = {}
-    gooding = Good.objects.filter(gooder=user)
-    for g in gooding:
-        good_posts.append(g.post)
-        comment_num_count(g.post, comment_num)
-        try:
-            top_comment[g.post.id] = g.post.post_set.all()
-        except Exception:
-            pass
+    # イイねタブに表示する投稿
+    good_posts = list(map(lambda x : x.post, Good.objects.filter(gooder=user)))
     context["good_posts"] = good_posts
-    context["btn_class"] = "btn-primary"
-    for c in post:
-        comment_num_count(c, comment_num)
-        try:
-            top_comment[c.id] = c.post_set.all()
-        except Exception:
-            pass
-    context["comment_num"] = comment_num
-    context["top_comment"] = top_comment
+    lib.list_comment(context, good_posts)
 
     if request.user.is_anonymous:
         return render(request, "accounts/goodTab.html", context)
     
     #ログインしているときの追加情報
-    following = Follower.objects.filter(followed=user, following=request.user).exists()
-    context["following"] = following
-    if following:
-        button_class = "btn-warning"
-    else :
-        button_class = "btn-primary"
-    context["btn_class"] = button_class
-    good = Good.objects.filter(gooder=request.user)
-    goods = set()
-    for g in good:
-        goods.add(g.post.id)
-    context["goods"] = goods
-    blocks = set()
-    for b in Block.objects.filter(blocker=request.user):
-        blocks.add(b.blocked)
-    context["blocks"] = blocks
-    blocked = set()
-    for b in Block.objects.filter(blocked=request.user):
-        blocked.add(b.blocker)
-    context["blocked"] = blocked
-    mutes = set()
-    for m in Mute.objects.filter(muter=request.user):
-        mutes.add(m.muted)
-    context["mutes"] = mutes
+    lib.user_info(context, request.user)
     return render(request, "accounts/goodTab.html", context)
+
 
 @login_required
 def follow(request, followed_id):
