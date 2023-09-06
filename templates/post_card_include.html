@@ -23,7 +23,9 @@
         {% comment %} カードボディ {% endcomment %}
         <div class="card-body detail clearfix">
             <p class="card-text">
-                {{ postcard.detail|linebreaks }}
+                <div class="on-a">
+                    {{ postcard.detail|mention|linebreaks }}
+                </div>
             </p>
         </div>
 

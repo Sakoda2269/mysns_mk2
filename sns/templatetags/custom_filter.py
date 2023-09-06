@@ -1,5 +1,8 @@
 from django import template
-
+from django.contrib.auth import get_user_model
+from django.utils.html import escape
+from django.utils.safestring import mark_safe
+from django.urls import reverse
 
 register = template.Library()
 
@@ -18,3 +21,31 @@ def following_post(posts, following):
         if post.author in following:
             res.append(post)
     return res
+
+
+@register.filter
+def mention(detail):
+    users = set(get_user_model().objects.all())
+    usertags = {}
+    for u in users:
+        usertags[u.usertag] = u.id
+    res = ""
+    detail = escape(detail)
+    i = 0
+    last_i = 0
+    while i < len(detail) - 1:
+        if detail[i] == "@":
+            for j in range(16, 0, -1):
+                if detail[i+1:i+j+1] in usertags:
+                    res += detail[last_i:i]
+                    tag = detail[i+1:i+j+1]
+                    res += "<a href='{}'>".format(reverse("accounts:user", kwargs=dict(id=str(usertags[tag]))))
+                    res += "@" + tag
+                    res += "</a>"
+                    i += j
+                    last_i = i + 1
+                    break
+        i += 1
+    res += detail[last_i:]
+    return mark_safe(res)
+            
