@@ -1,14 +1,15 @@
 from typing import Any, Dict
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views import generic
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from .forms import SignUpForm, UserChangeForm
 from .models import CustomUser, Follower, Block, Mute
 from sns.models import Post, Good
 from django.http import HttpResponse, JsonResponse
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.decorators import login_required
 from mysns import lib
+from django.contrib.auth import get_user_model
 
 
 
@@ -18,25 +19,14 @@ class SignUpView(generic.CreateView):
     template_name = "accounts/signup.html"
 
 
-class UserChangeView(LoginRequiredMixin, generic.FormView):
+class UpdateView(UserPassesTestMixin, generic.edit.UpdateView):
     template_name = 'registration/change.html'
+    model = get_user_model()
     form_class = UserChangeForm
     success_url = reverse_lazy('sns:index')
 
-    def form_valid(self, form):
-        form.update(user=self.request.user)
-        return super().form_valid(form)
-    
-    def get_form_kwargs(self) -> Dict[str, Any]:
-        kwargs = super().get_form_kwargs()
-        kwargs.update({
-            'username' : self.request.user.username,
-            'email' : self.request.user.email,
-            'usertag' : self.request.user.usertag,
-        })
-        CustomUser.objects.filter(email=self.request.user.email).update(email=None, usertag=None)
-        return kwargs
-    
+    def test_func(self):
+        return self.get_object().id == self.request.user.id
 
 
 def user_detail(request, id):

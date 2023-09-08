@@ -10,9 +10,9 @@ urlpatterns = [
     path("user/<str:id>/", views.user_detail, name="user"),
     path("follow/<str:followed_id>/", views.follow, name="follow"),
     path("ajax_follow/", views.ajax_follow, name="ajax_follow"),
-    path("follower/<str:id>/<str:follow_type>", views.follower_list, name="follower"),
+    path("follower/<str:id>/<str:follow_type>/", views.follower_list, name="follower"),
     path("goodTab/<str:id>/", views.ajax_goodtab, name="ajax_good_tab"),
-    path("block/<str:id>", views.block, name="block"),
-    path("mute/<str:id>", views.mute, name="mute"),
-    path("change/", views.UserChangeView.as_view(), name="change"),
+    path("block/<str:id>/", views.block, name="block"),
+    path("mute/<str:id>/", views.mute, name="mute"),
+    path("change/<str:pk>/", views.UpdateView.as_view(), name="change"),
 ]

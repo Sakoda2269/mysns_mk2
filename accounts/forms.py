@@ -39,9 +39,3 @@ class UserChangeForm(ModelForm):
             self.fields['usertag'].widget.attrs['value'] = usertag
         for field in self.fields.values():
             field.widget.attrs["class"] = "form-control"
-    
-    def update(self, user):
-        user.username = self.cleaned_data['username']
-        user.email = self.cleaned_data['email']
-        user.usertag = self.cleaned_data['usertag']
-        user.save()
