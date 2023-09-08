@@ -19,7 +19,8 @@ class IndexView(generic.ListView):
 
     def get_context_data(self, *args, **kwargs: Any):
         context = super().get_context_data(*args, **kwargs)
-        lib.list_comment(context, self.queryset)
+        post = Post.objects.filter(mode=0)
+        lib.list_comment(context, post)
         
         if self.request.user.is_anonymous:
             return context
@@ -78,7 +79,7 @@ class DetailView(generic.DetailView):
 class CreateView(generic.edit.CreateView):
     model = Post
     form_class = CreatePost
-
+    success_url = reverse_lazy("sns:index")
     def form_valid(self, form: BaseModelForm) -> HttpResponse:
         form.instance.author = self.request.user
         return super(CreateView, self).form_valid(form)
