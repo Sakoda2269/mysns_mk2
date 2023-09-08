@@ -10,7 +10,8 @@ class Post(models.Model):
     detail = models.TextField(max_length=255)
     author = models.ForeignKey(
         get_user_model(),
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        related_name="author"
     )
     created_at = models.DateTimeField(auto_now_add=True)
     good_num = models.IntegerField(default=0)
@@ -19,7 +20,12 @@ class Post(models.Model):
         "Post",
         on_delete=models.CASCADE,
         null=True,
-        blank=True
+        blank=True,
+    )
+
+    mentions = models.ManyToManyField(
+        get_user_model(),
+        related_name="mentions"
     )
 
     def __str__(self):

@@ -24,7 +24,8 @@ def following_post(posts, following):
 
 
 @register.filter
-def mention(detail):
+def mention(post):
+    detail = post.detail
     users = set(get_user_model().objects.all())
     usertags = {}
     for u in users:
@@ -36,9 +37,10 @@ def mention(detail):
     while i < len(detail) - 1:
         if detail[i] == "@":
             for j in range(16, 0, -1):
-                if detail[i+1:i+j+1] in usertags:
+                tag = detail[i+1:i+j+1]
+                if tag in usertags:
                     res += detail[last_i:i]
-                    tag = detail[i+1:i+j+1]
+                    post.mentions.add(usertags[tag])
                     res += "<a href='{}'>".format(reverse("accounts:user", kwargs=dict(id=str(usertags[tag]))))
                     res += "@" + tag
                     res += "</a>"
