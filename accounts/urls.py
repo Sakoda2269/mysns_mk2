@@ -14,4 +14,5 @@ urlpatterns = [
     path("goodTab/<str:id>/", views.ajax_goodtab, name="ajax_good_tab"),
     path("block/<str:id>", views.block, name="block"),
     path("mute/<str:id>", views.mute, name="mute"),
+    path("change/", views.UserChangeView.as_view(), name="change"),
 ]

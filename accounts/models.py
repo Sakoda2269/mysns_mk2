@@ -16,7 +16,7 @@ from django.contrib.auth.models import PermissionsMixin
 from django.contrib.auth import get_user_model
 
 import uuid
-import random, string
+
 
 class CustomUserManager(BaseUserManager):
     use_in_migrations = True
@@ -79,22 +79,16 @@ class CustomUserManager(BaseUserManager):
             )
         return self.none()
 
-
-def randomname(n) -> str:
-        randlst = [random.choice(string.ascii_letters + string.digits) for i in range(n)]
-        return ''.join(randlst)
-
-
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    email = models.EmailField(_("email address"), unique=True, blank=True)
+    email = models.EmailField(_("email address"), unique=True, null=True)
     is_staff = models.BooleanField(
         _("staff status"),
         default=False,
         help_text=_("Designates whether the user can log into this admin site."),
     )
     username = models.CharField(_("username"), max_length=50)
-    usertag = models.CharField(_("usertag"), max_length=16, default=randomname(16), unique=True)
+    usertag = models.CharField(_("usertag"), max_length=16, unique=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     objects = CustomUserManager()

@@ -1,18 +1,42 @@
+from typing import Any, Dict
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views import generic
 from django.urls import reverse_lazy
-from .forms import SignUpForm
+from .forms import SignUpForm, UserChangeForm
 from .models import CustomUser, Follower, Block, Mute
 from sns.models import Post, Good
 from django.http import HttpResponse, JsonResponse
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from mysns import lib
+
 
 
 class SignUpView(generic.CreateView):
     form_class = SignUpForm
     success_url = reverse_lazy("login")
     template_name = "accounts/signup.html"
+
+
+class UserChangeView(LoginRequiredMixin, generic.FormView):
+    template_name = 'registration/change.html'
+    form_class = UserChangeForm
+    success_url = reverse_lazy('sns:index')
+
+    def form_valid(self, form):
+        form.update(user=self.request.user)
+        return super().form_valid(form)
+    
+    def get_form_kwargs(self) -> Dict[str, Any]:
+        kwargs = super().get_form_kwargs()
+        kwargs.update({
+            'username' : self.request.user.username,
+            'email' : self.request.user.email,
+            'usertag' : self.request.user.usertag,
+        })
+        CustomUser.objects.filter(email=self.request.user.email).update(email=None, usertag=None)
+        return kwargs
+    
 
 
 def user_detail(request, id):
