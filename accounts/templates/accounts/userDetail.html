@@ -80,13 +80,13 @@
             <a href="{% url 'accounts:follower' userDetail.id 'followed' %}" class="notlink">
                 フォロワー:<div style="display:inline;" class="num">{{ followed_num }}</div>
             </a>
-            {% if user.is_anonymous %}
-            {% elif user != userDetail %}
                 <div class="dropdown">
                     <button class="wh-30px float-right dropdown-toggle" type="button"
                         id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="fa-solid fa-ellipsis-vertical"></i>
                     </button>
+                    {% if user.is_anonymous %}
+                    {% elif user != userDetail %}
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                             {% if is_block %}
                                 <a class="dropdown-item block" href="{% url 'accounts:block' userDetail.id %}" style="color:red">ブロック解除</a>
@@ -99,8 +99,12 @@
                                 <a class="dropdown-item block" href="{% url 'accounts:mute' userDetail.id %}" style="color:orange">ミュート</a> 
                             {% endif %}
                         </div>
+                    {% else %}
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <a class="dropdown-item block" href="{% url 'accounts:edit' userDetail.id %}" style="color:#444">ユーザー情報の変更</a>
+                        </div>
+                    {% endif %}
                 </div>
-            {% endif %}
         </div>
         <p>
             {% if request.user.is_anonymous %}
