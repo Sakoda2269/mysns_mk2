@@ -53,6 +53,7 @@
         <div class='container-fluid'>
             <div class="row">
                 <div class="col-1">
+                {% comment %} サイドバー {% endcomment %}
                     <div style="position: sticky; top: 75px;">
                             <button class="btn btn-primary rounded-circle p-0 w-40px float-right"
                                  onClick="location.href='{% url 'sns:index' %}'">
@@ -69,6 +70,12 @@
                                 <button class="btn btn-primary rounded-circle p-0 w-40px float-right" 
                                     onClick="location.href='{% url 'accounts:user' user.id %}'">
                                     <i class="fa-solid fa-user"></i>
+                                </button>
+                                <br>
+                                <br>
+                                <button class="btn btn-primary rounded-circle p-0 w-40px float-right"
+                                    onClick="location.href='{% url 'sns:notice' user.id %}'">
+                                    <i class="fa-solid fa-bell"></i>
                                 </button>
                             {% endif %}
                     </div>

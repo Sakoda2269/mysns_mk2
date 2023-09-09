@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 style="text-align:center;">通知</h1>
+<hr widht="100%" color="#ddd">
+{% for notice in notices %}
+    <div>
+        {% if notice.method == "good" %}
+            <a href="{% url 'accounts:user' notice.user_from.id %}">
+                {{ notice.user_from.username }}
+            </a>
+            が
+            <a href="{% url 'sns:post' notice.post.id %}">
+                {{ notice.post.title }}
+            </a>
+            にイイねをしました！
+        {% elif notice.method == "comment"%}
+            <a href="{% url 'accounts:user' notice.user_from.id %}">
+                {{ notice.user_from.username }}
+            </a>
+            が
+            <a href="{% url 'sns:post' notice.post.id %}">
+                {{ notice.post.title }}
+            </a>
+            にコメントをしました！
+        {% elif notice.method == "follow" %}
+            <a href="{% url 'accounts:user' notice.user_from.id %}">
+                {{ notice.user_from.username }}
+            </a>
+            があなたをフォローしました！
+        {% endif %}
+        <br>
+    </div>
+    <hr widht="100%" color="#ddd">
+{% endfor %}
+
+{% endblock content %}
+

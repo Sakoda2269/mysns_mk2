@@ -23,16 +23,10 @@ class Post(models.Model):
         blank=True,
     )
 
-    mentions = models.ManyToManyField(
-        get_user_model(),
-        related_name="mentions"
-    )
-
     def __str__(self):
         if self.title == None:
             return "comment"
         return self.title
-    
 
     def get_absolute_url(self):
         return reverse("sns:post", kwargs={'pk' : self.pk})
@@ -49,6 +43,27 @@ class Good(models.Model):
         on_delete=models.CASCADE
     )
 
-
     def __str__(self):
         return self.post.title
+
+
+class Notice(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    method = models.CharField(max_length=20)
+    user_from = models.ForeignKey(
+        get_user_model(),
+        on_delete=models.CASCADE,
+        related_name="user_from"
+    )
+    user_to = models.ForeignKey(
+        get_user_model(),
+        on_delete=models.CASCADE,
+        related_name="user_to"
+    )
+    new = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    post = models.ForeignKey(
+        Post,
+        on_delete=models.CASCADE,
+        null=True,
+    )

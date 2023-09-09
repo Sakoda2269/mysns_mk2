@@ -1,13 +1,14 @@
 from typing import Any, Dict
 from django.db.models.query import QuerySet
 from django.views import generic
-from .models import Post, Good
+from .models import Post, Good, Notice
 from accounts.models import Follower, Block, Mute
 from .forms import CreatePost, CommentForm
 from django.urls import reverse_lazy
 from django.forms.models import BaseModelForm
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import UserPassesTestMixin
 from mysns import lib
@@ -97,6 +98,13 @@ class DeleteView(UserPassesTestMixin, generic.edit.DeleteView):
     model = Post
     success_url = reverse_lazy("sns:index")
 
+    def delete(self, request: HttpRequest, *args: str, **kwargs: Any) -> HttpResponse:
+        post = self.get_object()
+        if post.mode == 1:
+            notice = get_object_or_404(Notice, method="comment", user_from=request.user, post=post.parent_post)
+            notice.delete()
+        return super().delete(request, *args, **kwargs)
+
     def test_func(self):
         return self.get_object().author == self.request.user
 
@@ -114,6 +122,12 @@ def good(request, post_id, isList):
             post = post,
             gooder = request.user
         )
+        Notice.objects.create(
+            method="good",
+            user_from=request.user,
+            user_to=post.author,
+            post=post
+        )
         post.good_num+=1
         post.save()
     
@@ -129,13 +143,21 @@ def ajax_good(request):
     context = {}
     if good.exists():
         good.delete()
+        notice = get_object_or_404(Notice, method="good", user_from=request.user, post=post)
+        notice.delete()
         post.good_num-=1
         post.save()
         context["method"] = "delete"
     else:
         Good.objects.create(
-            post = post,
-            gooder = request.user
+            post=post,
+            gooder=request.user
+        )
+        Notice.objects.create(
+            method="good",
+            user_from=request.user,
+            user_to=post.author,
+            post=post
         )
         post.good_num+=1
         post.save()
@@ -154,10 +176,17 @@ def ajax_comment(request):
     Post.objects.create(
         author=request.user,
         title=post_title,
-        detail = comment,
-        mode = 1,
+        detail=comment,
+        mode=1,
         parent_post = post
     )
+    Notice.objects.create(
+        method="comment",
+        user_from=request.user,
+        user_to=post.author,
+        post=post
+    )
+    
     context = {}
     context["comment_num"] = post.post_set.all().count()
     return JsonResponse(context)
@@ -204,3 +233,11 @@ class Comment(generic.edit.CreateView):
         id = self.kwargs["pk"]
         form.instance.parent_post = get_object_or_404(Post, id=id)
         return super(Comment, self).form_valid(form)
+
+
+def notification(request, id):
+    context = {}
+    user = get_object_or_404(get_user_model(), id=id)
+    notice_list = Notice.objects.filter(user_to = user)
+    context["notices"] = notice_list
+    return render(request, "sns/notice.html", context)

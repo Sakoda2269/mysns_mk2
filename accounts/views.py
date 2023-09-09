@@ -4,7 +4,7 @@ from django.views import generic
 from django.urls import reverse_lazy, reverse
 from .forms import SignUpForm, UserChangeForm
 from .models import CustomUser, Follower, Block, Mute
-from sns.models import Post, Good
+from sns.models import Post, Good, Notice
 from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.decorators import login_required
@@ -92,8 +92,15 @@ def follow(request, followed_id):
     already_followed = Follower.objects.filter(following=following_user, followed=followed_user).exists()
     if already_followed:
         Follower.objects.get(following=following_user, followed=followed_user).delete()
+        notice=get_object_or_404(Notice, method="follow", user_from=request.user, user_to=followed_user)
+        notice.delete()
     else:
         Follower.objects.create(following=following_user, followed=followed_user)
+        Notice.objects.create(
+            method="follow",
+            user_from=request.user,
+            user_to=followed_user
+        )
     return redirect(f"/accounts/user/{followed_user.id}")
 
 
@@ -105,9 +112,16 @@ def ajax_follow(request):
     context = {}
     if already_followed:
         Follower.objects.get(following=following_user, followed=followed_user).delete()
+        notice=get_object_or_404(Notice, method="follow", user_from=request.user, user_to=followed_user)
+        notice.delete()
         context["method"] = "unfollow"
     else:
         Follower.objects.create(following=following_user, followed=followed_user)
+        Notice.objects.create(
+            method="follow",
+            user_from=request.user,
+            user_to=followed_user
+        )
         context["method"] = "follow"
     followed_num = Follower.objects.filter(followed=followed_user).count()
     context["num"] = followed_num

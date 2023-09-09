@@ -28,6 +28,7 @@ def mention(post):
     detail = post.detail
     users = set(get_user_model().objects.all())
     usertags = {}
+
     for u in users:
         usertags[u.usertag] = u.id
     res = ""
@@ -40,7 +41,7 @@ def mention(post):
                 tag = detail[i+1:i+j+1]
                 if tag in usertags:
                     res += detail[last_i:i]
-                    post.mentions.add(usertags[tag])
+                    get_user_model().objects.get(id=usertags[tag]).mentioned.add(post)
                     res += "<a href='{}'>".format(reverse("accounts:user", kwargs=dict(id=str(usertags[tag]))))
                     res += "@" + tag
                     res += "</a>"
