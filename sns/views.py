@@ -81,9 +81,36 @@ class CreateView(generic.edit.CreateView):
     model = Post
     form_class = CreatePost
     success_url = reverse_lazy("sns:index")
+
+
     def form_valid(self, form: BaseModelForm) -> HttpResponse:
         form.instance.author = self.request.user
+        self.this = form.instance
         return super(CreateView, self).form_valid(form)
+    
+    def get_success_url(self) -> str:
+        users = set(get_user_model().objects.all())
+        usertags = {}
+        for u in users:
+            usertags[u.usertag] = u
+        used = set()
+        detail = self.this.detail
+        i = 0
+        while i < len(detail) - 1:
+            if detail[i] == "@":
+                for j in range(16, 0, -1):
+                    tag = detail[i+1:i+j+1]
+                    if tag not in used and tag in usertags:
+                        Notice.objects.create(
+                            method="mention",
+                            user_from=self.this.author,
+                            user_to=usertags[tag],
+                            post=self.this
+                        )
+                        used.add(tag)
+            i += 1
+        return super().get_success_url()
+
     
     
 class UpdateView(UserPassesTestMixin, generic.edit.UpdateView):
@@ -100,9 +127,6 @@ class DeleteView(UserPassesTestMixin, generic.edit.DeleteView):
 
     def delete(self, request: HttpRequest, *args: str, **kwargs: Any) -> HttpResponse:
         post = self.get_object()
-        if post.mode == 1:
-            notice = get_object_or_404(Notice, method="comment", comment=post)
-            notice.delete()
         return super().delete(request, *args, **kwargs)
 
     def test_func(self):

@@ -41,6 +41,15 @@
                         {{ notice.user_from.username }}
                     </a>
                     があなたをフォローしました！
+                {% elif notice.method == "mention" %}
+                    <a href="{% url 'accounts:user' notice.user_from.id %}">
+                        {{ notice.user_from.username }}
+                    </a>
+                    があなたをメンションしました!
+                    <br>
+                    <a href="{% url 'sns:post' notice.post.id %}" style="font-weight:normal; padding-left:2rem" class="notlink">
+                        {{ notice.post.detail | truncatechars:20}}
+                    </a>
                 {% endif %}
             </span>
             <span style="position:absolute; right:1rem;">
