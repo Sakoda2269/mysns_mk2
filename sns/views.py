@@ -101,7 +101,7 @@ class DeleteView(UserPassesTestMixin, generic.edit.DeleteView):
     def delete(self, request: HttpRequest, *args: str, **kwargs: Any) -> HttpResponse:
         post = self.get_object()
         if post.mode == 1:
-            notice = get_object_or_404(Notice, method="comment", user_from=request.user, post=post.parent_post)
+            notice = get_object_or_404(Notice, method="comment", comment=post)
             notice.delete()
         return super().delete(request, *args, **kwargs)
 
@@ -173,7 +173,7 @@ def ajax_comment(request):
     post_title = post.title + "のコメント",
     if post.mode == 1:
         post_title = post.title
-    Post.objects.create(
+    comment = Post.objects.create(
         author=request.user,
         title=post_title,
         detail=comment,
@@ -184,7 +184,8 @@ def ajax_comment(request):
         method="comment",
         user_from=request.user,
         user_to=post.author,
-        post=post
+        post=post,
+        comment=comment
     )
     
     context = {}
@@ -225,7 +226,6 @@ class Comment(generic.edit.CreateView):
     form_class = CommentForm
     template_name = "sns/comment_form.html"
     success_url = reverse_lazy("sns:index")
-
 
     def form_valid(self, form: BaseModelForm) -> HttpResponse:
         form.instance.mode = 1

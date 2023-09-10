@@ -32,6 +32,10 @@
                         {{ notice.post.title }}
                     </a>
                     にコメントをしました！
+                    <br>
+                    <a href="{% url 'sns:post' notice.comment.id %}" style="font-weight:normal; padding-left:2rem" class="notlink">
+                        {{ notice.comment.detail | truncatechars:20}}
+                    </a>
                 {% elif notice.method == "follow" %}
                     <a href="{% url 'accounts:user' notice.user_from.id %}">
                         {{ notice.user_from.username }}

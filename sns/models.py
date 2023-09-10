@@ -66,4 +66,11 @@ class Notice(models.Model):
         Post,
         on_delete=models.CASCADE,
         null=True,
+        related_name="notice_post"
+    )
+    comment = models.ForeignKey(
+        Post,
+        on_delete=models.CASCADE,
+        related_name="comment",
+        null=True
     )
