@@ -239,5 +239,21 @@ def notification(request, id):
     context = {}
     user = get_object_or_404(get_user_model(), id=id)
     notice_list = Notice.objects.filter(user_to = user)
+    news = set()
+    for n in notice_list:
+        if n.new:
+            n.new = False
+            news.add(n)
+            n.save()
     context["notices"] = notice_list
+    context["news"] = news
     return render(request, "sns/notice.html", context)
+
+
+def check_notification(request):
+    context = {}
+    user_id = request.POST["user_id"]
+    user = get_object_or_404(get_user_model(), id=user_id)
+    news = Notice.objects.filter(user_to=user, new=True)
+    context["exist"] = news.exists()
+    return JsonResponse(context)

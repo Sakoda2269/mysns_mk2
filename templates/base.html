@@ -12,16 +12,28 @@
         <title>SNS</title>
         <style>body {padding-top : 80px}</style>
     </head>
-    <body>
-    <style>
-        .w-40px{
-            width: 40px !important;
-            height: 40px !important;
-        }
-    </style>
-
-    {% block extra_style %}
-    {% endblock %}
+    {% if user.is_anonymous %}
+        <body>
+    {% else %}
+        <body onload="check_notification('{{ user.id }}');">
+    {% endif %}
+        <style>
+            .w-40px{
+                width: 40px !important;
+                height: 40px !important;
+            }
+            .border-radius {
+                width: 10px;
+                height: 10px;
+                line-height: 10px;
+                background-color: red;
+                border-radius: 50%;
+                color: #fff;
+                text-align: center;
+            }
+        </style>
+        {% block extra_style %}
+        {% endblock %}
         <nav class='navbar navbar-expand-sm navbar-dark bg-dark fixed-top'>
             <a class='navbar-brand' href='{% url "sns:index" %}'>SNS</a>
             <ul class="navbar-nav">
@@ -75,7 +87,12 @@
                                 <br>
                                 <button class="btn btn-primary rounded-circle p-0 w-40px float-right"
                                     onClick="location.href='{% url 'sns:notice' user.id %}'">
-                                    <i class="fa-solid fa-bell"></i>
+                                        <div style="position:relative; top:5px;">
+                                            <i class="fa-solid fa-bell" ></i>
+                                        </div>
+                                        <div id="new_notice" style="position:relative;bottom:25px; left:28px">
+                                            <div class="border-radius" style="visibility:hidden"></div>
+                                        </div>
                                 </button>
                             {% endif %}
                     </div>
@@ -91,6 +108,31 @@
             <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/4.0.0/mdb.min.js"></script>
             {% block extrajs %}
             {% endblock %}
+            <script type="text/javascript">
+                function check_notification(user_id){
+                    const url = '{% url "sns:check_notification" %}';
+                    const data = new URLSearchParams();
+                    data.append('user_id', String(user_id));
+                    fetch(url, {
+                        method: 'POST',
+                        headers:{
+                            'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
+                            'X-CSRFToken': '{{ csrf_token }}',
+                        },
+                        body: data,
+                    }).then(response  => {
+                        return response.json();
+                    }).then(response => {
+                        if(response["exist"]){
+                            document.getElementById("new_notice").innerHTML='<div class="border-radius"></div>';
+                        }else{
+                            document.getElementById("new_notice").innerHTML='<div class="border-radius" style="visibility:hidden;"></div>';
+                        }
+                    }).catch(error => {
+                        console.log(error);
+                    });
+                }
+            </script>
         </div>
 
 

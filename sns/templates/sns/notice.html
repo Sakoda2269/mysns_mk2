@@ -2,36 +2,50 @@
 
 {% block content %}
 <h1 style="text-align:center;">通知</h1>
-<hr widht="100%" color="#ddd">
-{% for notice in notices %}
-    <div>
-        {% if notice.method == "good" %}
-            <a href="{% url 'accounts:user' notice.user_from.id %}">
-                {{ notice.user_from.username }}
-            </a>
-            が
-            <a href="{% url 'sns:post' notice.post.id %}">
-                {{ notice.post.title }}
-            </a>
-            にイイねをしました！
-        {% elif notice.method == "comment"%}
-            <a href="{% url 'accounts:user' notice.user_from.id %}">
-                {{ notice.user_from.username }}
-            </a>
-            が
-            <a href="{% url 'sns:post' notice.post.id %}">
-                {{ notice.post.title }}
-            </a>
-            にコメントをしました！
-        {% elif notice.method == "follow" %}
-            <a href="{% url 'accounts:user' notice.user_from.id %}">
-                {{ notice.user_from.username }}
-            </a>
-            があなたをフォローしました！
-        {% endif %}
-        <br>
+<div style="border-top:solid; color:999;"></div>
+<br>
+<div style="padding-bottom:10px;">
+    <div style="border-top:solid; color:#ddd; border-widht:2px"></div>
+</div>
+{% for notice in notices reversed %}
+    {% if notice in news %}
+        <div style="font-weight:bold;">
+    {% else %}
+        <div style="display:inline;">
+    {% endif %}
+            <span sytle="position:absolute; left:1rem;">
+                {% if notice.method == "good" %}
+                    <a href="{% url 'accounts:user' notice.user_from.id %}">
+                        {{ notice.user_from.username }}
+                    </a>
+                    が
+                    <a href="{% url 'sns:post' notice.post.id %}">
+                        {{ notice.post.title }}
+                    </a>
+                    にイイねをしました！
+                {% elif notice.method == "comment"%}
+                    <a href="{% url 'accounts:user' notice.user_from.id %}">
+                        {{ notice.user_from.username }}
+                    </a>
+                    が
+                    <a href="{% url 'sns:post' notice.post.id %}">
+                        {{ notice.post.title }}
+                    </a>
+                    にコメントをしました！
+                {% elif notice.method == "follow" %}
+                    <a href="{% url 'accounts:user' notice.user_from.id %}">
+                        {{ notice.user_from.username }}
+                    </a>
+                    があなたをフォローしました！
+                {% endif %}
+            </span>
+            <span style="position:absolute; right:1rem;">
+                {{ notice.created_at }}
+            </span>
     </div>
-    <hr widht="100%" color="#ddd">
+    <div style="padding-top:10px; padding-bottom:10px;">
+        <div style="border-bottom:solid; color:#ddd; border-widht:2px"></div>
+    </div>
 {% endfor %}
 
 {% endblock content %}
