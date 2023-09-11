@@ -89,65 +89,43 @@ class CreateView(generic.edit.CreateView):
         return super(CreateView, self).form_valid(form)
     
     def get_success_url(self) -> str:
-        users = set(get_user_model().objects.all())
-        usertags = {}
-        for u in users:
-            usertags[u.usertag] = u
-        hashes = {}
-        for h in Hashtag.objects.all():
-            hashes[h.name] = h
-        used = set()
-        detail = self.this.detail
-        i = 0
         post = self.this
-        while i < len(detail) - 1:
-            if detail[i] == "@":
-                for j in range(16, 0, -1):
-                    tag = detail[i+1:i+j+1]
-                    if tag not in used and tag in usertags:
-                        Notice.objects.create(
-                            method="mention",
-                            user_from=post.author,
-                            user_to=usertags[tag],
-                            post=post
-                        )
-                        used.add(tag)
-            if detail[i] == "#":
-                if detail[i+1] != " ":
-                    for j in range(2, 18):
-                        if i+j >= len(detail) or detail[i+j] == " " or detail[i+j] == "\n" or detail[i+j] == "#" or detail[i+j] == "@":
-                            hashtag = detail[i+1:i+j]
-                            if hashtag not in hashes and hashtag not in used:
-                                new_hash = Hashtag.objects.create(
-                                    name = hashtag,
-                                )
-                                new_hash.posts.add(post)
-                            elif hashtag not in used:
-                                target = hashes[hashtag]
-                                target.posts.add(post)
-                            used.add(hashtag)
-                            break
-                    else:
-                        hashtag = detail[i+1:i+j]
-                        if hashtag not in hashes and hashtag not in used:
-                            new_hash = Hashtag.objects.create(
-                                name = hashtag,
-                            )
-                            new_hash.posts.add(post)
-                        elif hashtag not in used:
-                            target = hashes[hashtag]
-                            target.posts.add(post)
-                        used.add(hashtag)
-
-            i += 1
+        detail = post.detail
+        mentions, hashes = lib.hash_mention_check(detail)
+        hashtags = {}
+        for h in Hashtag.objects.all():
+            hashtags[h.name] = h
+        for m in mentions:
+            Notice.objects.create(
+                method="mention",
+                user_from=post.author,
+                user_to=m,
+                post=post
+            )
+            post.mention.add(m)
+        for h in hashes:
+            if h in hashtags:
+                hashtags[h].posts.add(post)
+            else:
+                new_tag = Hashtag.objects.create(
+                    name=h
+                )
+                new_tag.posts.add(post)
 
         return super().get_success_url()
 
     
-    
 class UpdateView(UserPassesTestMixin, generic.edit.UpdateView):
     model = Post
     form_class = CreatePost
+
+    def get_success_url(self) -> str:
+        post = self.get_object()
+        mention = set(post.mention.all())
+        hashtags = post.good_set
+        print(mention, hashtags)
+
+        return super().get_success_url()
 
     def test_func(self):
         return self.get_object().author == self.request.user

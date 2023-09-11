@@ -23,6 +23,12 @@ class Post(models.Model):
         blank=True,
     )
 
+    mention = models.ManyToManyField(
+        get_user_model(),
+        related_name="mention",
+        blank=True
+    )
+
     def __str__(self):
         if self.title == None:
             return "comment"
@@ -75,12 +81,17 @@ class Notice(models.Model):
         null=True
     )
 
+    def __str__(self):
+        return self.method + " from " + str(self.user_from) + " to " + str(self.user_to)
+
 
 class Hashtag(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=16)
     posts = models.ManyToManyField(
         Post,
-        related_name="posts",
         blank=True
     )
+
+    def __str__(self):
+        return "#" + self.name
