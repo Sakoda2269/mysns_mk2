@@ -92,9 +92,6 @@ class CreateView(generic.edit.CreateView):
         post = self.this
         detail = post.detail
         mentions, hashes = lib.hash_mention_check(detail)
-        hashtags = {}
-        for h in Hashtag.objects.all():
-            hashtags[h.name] = h
         for m in mentions:
             Notice.objects.create(
                 method="mention",
@@ -104,13 +101,7 @@ class CreateView(generic.edit.CreateView):
             )
             post.mention.add(m)
         for h in hashes:
-            if h in hashtags:
-                hashtags[h].posts.add(post)
-            else:
-                new_tag = Hashtag.objects.create(
-                    name=h
-                )
-                new_tag.posts.add(post)
+            h.posts.add(post)
 
         return super().get_success_url()
 
@@ -122,8 +113,24 @@ class UpdateView(UserPassesTestMixin, generic.edit.UpdateView):
     def get_success_url(self) -> str:
         post = self.get_object()
         mention = set(post.mention.all())
-        hashtags = post.good_set
-        print(mention, hashtags)
+        hashtags = set(post.hashtag_set.all())
+        new_mention, new_hash = lib.hash_mention_check(post.detail)
+        for u in (mention - new_mention):
+            post.mention.remove(u)
+            Notice.objects.get(method="mention", post=post, user_to=u).delete()
+        for u in (new_mention - mention):
+            post.mention.add(u)
+            Notice.objects.create(
+                method="mention",
+                post=post,
+                user_to=u,
+                user_from=post.author
+            )
+        for h in (hashtags - new_hash):
+            h.posts.remove(post)
+        for h in (new_hash - hashtags):
+            h.posts.add(post)
+        hashtags = set(post.hashtag_set.all())
 
         return super().get_success_url()
 

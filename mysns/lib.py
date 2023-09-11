@@ -42,3 +42,48 @@ def user_info(context, user):
     for m in Mute.objects.filter(muter=user):
         mutes.add(m.muted)
     context["mutes"] = mutes
+
+
+def hash_mention_check(detail:str):
+    from django.contrib.auth import get_user_model
+    from sns.models import Hashtag
+    user_tags = {}
+    hashtags = {}
+    for u in get_user_model().objects.all():
+        user_tags[u.usertag] = u
+    for h in Hashtag.objects.all():
+        hashtags[h.name] = h
+    mention = set()
+    hash_tag = set()
+    for i in range(len(detail)):
+        if detail[i] == "@":
+            for j in range(16, 0, -1):
+                usertag = detail[i+1:i+j+1]
+                if usertag in user_tags:
+                    mention.add(user_tags[usertag])
+                    break
+        if detail[i] == "#":
+                if detail[i+1] != " ":
+                    for j in range(2, 18):
+                        if i+j >= len(detail) or detail[i+j] == " " or detail[i+j] == "\r" or \
+                            detail[i+j] == "\n" or detail[i+j] == "#" or detail[i+j] == "@":
+                            target_hashtag = detail[i+1:i+j]
+                            if target_hashtag in hashtags:
+                                hash_tag.add(hashtags[target_hashtag])
+                            else:
+                                new = Hashtag.objects.create(
+                                    name=target_hashtag
+                                )
+                                hashtags[new.name] = new
+                                hash_tag.add(new)
+                            break
+                    else:
+                        if detail[i+1:i+j] in hashtags:
+                            hash_tag.add(hashtags[detail[i+1:i+j]])
+                        else:
+                            new = Hashtag.objects.create(
+                                name=target_hashtag
+                            )
+                            hashtags[new.name] = new
+                            hash_tag.add(target_hashtag)
+    return mention, hash_tag

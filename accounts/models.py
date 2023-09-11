@@ -91,12 +91,6 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     usertag = models.CharField(_("usertag"), max_length=16, unique=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
-    mentioned = models.ManyToManyField(
-        "sns.Post",
-        blank=True,
-        related_name="mentioned"
-    )
-
     objects = CustomUserManager()
 
     EMAIL_FIELD = "email"
