@@ -74,3 +74,13 @@ class Notice(models.Model):
         related_name="comment",
         null=True
     )
+
+
+class Hashtag(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=16)
+    posts = models.ManyToManyField(
+        Post,
+        related_name="posts",
+        blank=True
+    )

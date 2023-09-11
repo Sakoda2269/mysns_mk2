@@ -1,7 +1,7 @@
 from typing import Any, Dict
 from django.db.models.query import QuerySet
 from django.views import generic
-from .models import Post, Good, Notice
+from .models import Post, Good, Notice, Hashtag
 from accounts.models import Follower, Block, Mute
 from .forms import CreatePost, CommentForm
 from django.urls import reverse_lazy
@@ -93,9 +93,13 @@ class CreateView(generic.edit.CreateView):
         usertags = {}
         for u in users:
             usertags[u.usertag] = u
+        hashes = {}
+        for h in Hashtag.objects.all():
+            hashes[h.name] = h
         used = set()
         detail = self.this.detail
         i = 0
+        post = self.this
         while i < len(detail) - 1:
             if detail[i] == "@":
                 for j in range(16, 0, -1):
@@ -103,12 +107,40 @@ class CreateView(generic.edit.CreateView):
                     if tag not in used and tag in usertags:
                         Notice.objects.create(
                             method="mention",
-                            user_from=self.this.author,
+                            user_from=post.author,
                             user_to=usertags[tag],
-                            post=self.this
+                            post=post
                         )
                         used.add(tag)
+            if detail[i] == "#":
+                if detail[i+1] != " ":
+                    for j in range(2, 18):
+                        if i+j >= len(detail) or detail[i+j] == " " or detail[i+j] == "\n" or detail[i+j] == "#" or detail[i+j] == "@":
+                            hashtag = detail[i+1:i+j]
+                            if hashtag not in hashes and hashtag not in used:
+                                new_hash = Hashtag.objects.create(
+                                    name = hashtag,
+                                )
+                                new_hash.posts.add(post)
+                            elif hashtag not in used:
+                                target = hashes[hashtag]
+                                target.posts.add(post)
+                            used.add(hashtag)
+                            break
+                    else:
+                        hashtag = detail[i+1:i+j]
+                        if hashtag not in hashes and hashtag not in used:
+                            new_hash = Hashtag.objects.create(
+                                name = hashtag,
+                            )
+                            new_hash.posts.add(post)
+                        elif hashtag not in used:
+                            target = hashes[hashtag]
+                            target.posts.add(post)
+                        used.add(hashtag)
+
             i += 1
+
         return super().get_success_url()
 
     
