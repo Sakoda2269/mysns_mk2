@@ -128,6 +128,8 @@ class UpdateView(UserPassesTestMixin, generic.edit.UpdateView):
             )
         for h in (hashtags - new_hash):
             h.posts.remove(post)
+            if h.posts.all().count() == 0:
+                h.delete()
         for h in (new_hash - hashtags):
             h.posts.add(post)
         hashtags = set(post.hashtag_set.all())
@@ -144,6 +146,9 @@ class DeleteView(UserPassesTestMixin, generic.edit.DeleteView):
 
     def delete(self, request: HttpRequest, *args: str, **kwargs: Any) -> HttpResponse:
         post = self.get_object()
+        for h in post.hashtag_set.all():
+            if h.posts.all().count() == 1:
+                h.delete()
         return super().delete(request, *args, **kwargs)
 
     def test_func(self):
