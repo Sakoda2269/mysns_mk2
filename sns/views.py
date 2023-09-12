@@ -312,3 +312,20 @@ def serch(request):
         hashtags["data"].append(h.name)
     context["data"] = json.dumps(hashtags)
     return render(request, "sns/serch.html", context)
+
+
+def ajax_show_hash(request, name):
+    hashtag = get_object_or_404(Hashtag, name=name)
+    context = {}
+    hash_posts = hashtag.posts.all()
+
+    # イイねタブに表示する投稿
+    context["hash_posts"] = hash_posts
+    lib.list_comment(context, hash_posts)
+
+    if request.user.is_anonymous:
+        return render(request, "sns/hash_posts.html", context)
+    
+    #ログインしているときの追加情報
+    lib.user_info(context, request.user)
+    return render(request, "sns/hash_posts.html", context)

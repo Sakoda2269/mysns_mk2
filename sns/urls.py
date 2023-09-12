@@ -20,4 +20,5 @@ urlpatterns = [
     path("notice/<str:id>/", views.notification, name="notice"),
     path("check_notification/", views.check_notification, name="check_notification"),
     path("serch/", views.serch, name="serch"),
+    path("ajax_show_hash/<str:name>/", views.ajax_show_hash, name="ajax_show_hash"),
 ]

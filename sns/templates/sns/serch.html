@@ -20,8 +20,8 @@
 <script type="text/javascript">
 
     function hash_list(tag){
-        console.log(tag);
-        alert(tag);
+        let url = '{% url "sns:ajax_show_hash" 123 %}'.replace("123", tag);
+        $("#hash_post").load(url, function(){});
     }
 
     window.addEventListener('DOMContentLoaded', function(){
@@ -55,7 +55,7 @@
             let inhtml = "";
             for(tag of ans){
                 let tag_name = tag.join("");
-                let tmp = 'onClick="hash_list(\' ' + String(tag_name) +' \')"'
+                let tmp = 'onClick="hash_list(\'' + String(tag_name) +'\')"'
                 inhtml += "<button style='width:100%; border:none' " + tmp + ">";
                 inhtml += tag.join("");
                 inhtml += "</button>";
