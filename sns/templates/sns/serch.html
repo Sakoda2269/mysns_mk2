@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="row form-group">
+        <label for="serch-box" class="col-sm-1" style="padding-left:2rem; padding-top:5px">
+            <i class="fa-solid fa-magnifying-glass"></i>
+        </label>
+        <span class="col-sm-11">
+            <input type="text" id="serch-box" class="form-control" placeholder="ハッシュタグを検索">
+            <div class="collapse" id="serch_res">
+                <h1>BOO</h1>
+            </div>
+        </span>
+    </div>
+    <div id="hash_post">
+    </div>
+{% endblock content %}
+
+{% block extrajs %}
+<script type="text/javascript">
+
+    function hash_list(tag){
+        console.log(tag);
+        alert(tag);
+    }
+
+    window.addEventListener('DOMContentLoaded', function(){
+        let serch = document.getElementById("serch-box");
+        const data = JSON.parse('{{ data|safe }}')
+        tags = data.data;
+        var tag_split = [];
+        for(t in tags){
+            tag_split.push(tags[t].split(''));
+        }
+        serch.addEventListener("input", function(){
+            serch_in = serch.value.split('');
+            let ans = [];
+            for(ts of tag_split){
+                let now = 0;
+                while(true){
+                    if(serch_in.length > ts.length){
+                        break;
+                    }
+                    if(serch_in[now] == ts[now]){
+                    }else{
+                        break;
+                    }
+                    now = now + 1;
+                    if(serch_in.length <= now || ts.length <= now){
+                        ans.push(ts);
+                        break;
+                    }
+                }
+            }
+            let inhtml = "";
+            for(tag of ans){
+                let tag_name = tag.join("");
+                let tmp = 'onClick="hash_list(\' ' + String(tag_name) +' \')"'
+                inhtml += "<button style='width:100%; border:none' " + tmp + ">";
+                inhtml += tag.join("");
+                inhtml += "</button>";
+                inhtml += "<br>";
+            }
+            if(serch_in.length==0){
+                $("#serch_res").collapse("hide");
+            }else{
+                $("#serch_res").collapse("show");
+                document.getElementById("serch_res").innerHTML = inhtml;
+            }
+        });
+        
+    });
+
+</script>
+{% endblock %}

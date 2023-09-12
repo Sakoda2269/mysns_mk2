@@ -73,11 +73,19 @@
                             </button>
                             <br>
                             <br>
+                            <button class="btn btn-primary rounded-circle p-0 w-40px float-right"
+                                 onClick="location.href='{% url 'sns:serch' %}'">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                            </button>
+                            <br>
+                            <br>
                             {% if user.is_anonymous %}
                                 <button class="btn btn-primary rounded-circle p-0 w-40px float-right" 
                                     onClick="location.href='/accounts/login'">
                                     <i class="fa-solid fa-user"></i>
                                 </button>
+                                <br>
+                                <br>
                             {% else %}
                                 <button class="btn btn-primary rounded-circle p-0 w-40px float-right" 
                                     onClick="location.href='{% url 'accounts:user' user.id %}'">

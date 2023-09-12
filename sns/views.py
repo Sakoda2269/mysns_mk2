@@ -303,3 +303,12 @@ def check_notification(request):
     news = Notice.objects.filter(user_to=user, new=True)
     context["exist"] = news.exists()
     return JsonResponse(context)
+
+
+def serch(request):
+    context = {}
+    hashtags = {"data":[]}
+    for h in Hashtag.objects.all():
+        hashtags["data"].append(h.name)
+    context["data"] = json.dumps(hashtags)
+    return render(request, "sns/serch.html", context)
