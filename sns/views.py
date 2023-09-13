@@ -305,12 +305,13 @@ def check_notification(request):
     return JsonResponse(context)
 
 
-def serch(request):
+def serch(request, tag=""):
     context = {}
     hashtags = {"data":[]}
     for h in Hashtag.objects.all():
         hashtags["data"].append(h.name)
     context["data"] = json.dumps(hashtags)
+    context["tag"] = "#" + tag
     return render(request, "sns/serch.html", context)
 
 

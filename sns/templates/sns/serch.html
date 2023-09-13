@@ -1,12 +1,20 @@
 {% extends "base.html" %}
 
+{% block extra_style %}
+<style>
+button:hover{
+    background:#ddd;
+}
+</style>
+{% endblock %}
+
 {% block content %}
     <div class="row form-group">
-        <label for="serch-box" class="col-sm-1" style="padding-left:2rem; padding-top:5px">
+        <label for="serch_box" class="col-sm-1" style="padding-left:2rem; padding-top:5px">
             <i class="fa-solid fa-magnifying-glass"></i>
         </label>
         <span class="col-sm-11">
-            <input type="text" id="serch-box" class="form-control" placeholder="ハッシュタグを検索">
+            <input type="text" id="serch_box" class="form-control" placeholder="ハッシュタグを検索">
             <div class="collapse" id="serch_res">
                 <h1>BOO</h1>
             </div>
@@ -17,15 +25,23 @@
 {% endblock content %}
 
 {% block extrajs %}
+{% include 'js/on_good_js.html' %}
 <script type="text/javascript">
 
     function hash_list(tag){
+        $("#serch_res").collapse("hide");
+        document.getElementById("serch_box").value=tag;
+        let tmp = "";
+        for(let i = 1; i < tag.length; i++){
+            tmp += tag.charAt(i);
+        }
+        tag = tmp;
         let url = '{% url "sns:ajax_show_hash" 123 %}'.replace("123", tag);
         $("#hash_post").load(url, function(){});
     }
 
     window.addEventListener('DOMContentLoaded', function(){
-        let serch = document.getElementById("serch-box");
+        let serch = document.getElementById("serch_box");
         const data = JSON.parse('{{ data|safe }}')
         tags = data.data;
         var tag_split = [];
@@ -37,16 +53,26 @@
             let ans = [];
             for(ts of tag_split){
                 let now = 0;
+                let tag_now = 0;
                 while(true){
-                    if(serch_in.length > ts.length){
+                    if(serch_in[now] == "#" && now == 0){
+                        now += 1;
+                        continue;
+                    }
+                    if (serch_in[0] == "#"){
+                        if(serch_in.length-1 > ts.length){
+                            break;
+                        }
+                    }
+                    else if(serch_in.length > ts.length){
                         break;
                     }
-                    if(serch_in[now] == ts[now]){
-                    }else{
+                    if(serch_in[now] != ts[tag_now]){
                         break;
                     }
                     now = now + 1;
-                    if(serch_in.length <= now || ts.length <= now){
+                    tag_now = tag_now + 1;
+                    if(serch_in.length <= now || ts.length <= tag_now){
                         ans.push(ts);
                         break;
                     }
@@ -55,9 +81,10 @@
             let inhtml = "";
             for(tag of ans){
                 let tag_name = tag.join("");
+                tag_name = "#" + tag_name;
                 let tmp = 'onClick="hash_list(\'' + String(tag_name) +'\')"'
                 inhtml += "<button style='width:100%; border:none' " + tmp + ">";
-                inhtml += tag.join("");
+                inhtml += "#" + tag.join("");
                 inhtml += "</button>";
                 inhtml += "<br>";
             }
@@ -72,4 +99,13 @@
     });
 
 </script>
+{% endblock %}
+
+{% block extra_ajax %}
+    $(document).ready(function(){
+        if("{{ tag }}" != "#"){
+            $("#serch_box").val("{{ tag }}");
+            hash_list("{{ tag }}");
+        }
+    });
 {% endblock %}
