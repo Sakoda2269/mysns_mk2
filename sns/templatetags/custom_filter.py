@@ -50,8 +50,9 @@ def mention(post):
                     last_i = i + 1
                     break
         if detail[i] == "#":
-            for j in range(i+1, len(detail)):
-                if(detail[j] == "#" or detail[j] == "\r" or detail[j] == "\n" or detail[j] == " " or detail[j] == "@"):
+            for j in range(i+1, i+17):
+
+                if(j >= len(detail) or detail[j] == "#" or detail[j] == "\r" or detail[j] == "\n" or detail[j] == " " or detail[j] == "@"):
                     break
             else:
                 j += 1
