@@ -4,6 +4,11 @@
     <form action="" method="POST">
         {% csrf_token %}
         {{ form.as_p }}
-        <button class="btn btn-primary" type="submit">確認</button>
+        <button onClick="location.href = 'JavaScript:history.back()'" class="btn btn-secondary" style="width:90px !important; height:40px !important;">
+            &lt; 戻る
+        </button>
+        <span style="float:right;">
+            <button class="btn btn-primary" style="width:90px !important; height:40px !important;" type="submit">変更</button>
+        </span>
     </form>
 {% endblock %}

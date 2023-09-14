@@ -4,24 +4,31 @@
 <h1>Login</h1>
 <section class='common-form'>
     {% if form.errors %}
-        <p class='error-msg'>Your username and password didn't match. Please try again.</p>
+        <p class='error-msg'>パスワードまたはメールアドレスが違います。</p>
     {% endif %}
 
     {% if next %}
         {% if user.is_authenticated %}
-            <p class='error-msg'>Your account doesn't have access to this page. To proceed,
-            please login with an account that has access.</p>
+            <p class='error-msg'>あなたのアカウントではアクセスできません</p>
         {% else %}
-            <p class='error-msg'>Please login to see this page.</p>
+            <p class='error-msg'>このページを見るにはログインしてください</p>
         {% endif %}
     {% endif %}
     <form action='{% url "login" %}' method='post'>
         {% csrf_token %}
         <input type='hidden' name='next' value='{{ next }}'/>
-        {{ form.as_p }}
+        <p>
+            <label for="id_username">メールアドレス:</label>
+            <input class="form-control" type="text" name="username" autofocus="" autocapitalize="none" autocomplete="username" maxlength="254" required="" id="id_username">
+        </p>
+        <p>
+            <label for="id_password">パスワード:</label>
+            <input class="form-control" type="password" name="password" autocomplete="current-password" required="" id="id_password">
+        </p>
         <a href="{% url 'accounts:password_reset_form' %}">パスワードを忘れた</a>
         <br>
-        <button type='submit'>Login</button>
+        <br>
+        <button class="btn btn-primary" style="width:90px !important; height:40px !important;" type='submit'>Login</button>
     </form>
 </section>
 {% endblock %}

@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>Logge Out</h1>
-<p>Thank you!</p>
+<h1>Logged Out</h1>
+<p>ログアウトしました</p>
 <p>
-    <a href='{% url "login" %}'>Log in again</a>
+    <button class="btn btn-primary" style="width:90px !important; height:40px !important;" onClick="location.href='{% url 'login' %}'">Login</button>
 </p>
 {% endblock %}

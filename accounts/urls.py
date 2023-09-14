@@ -1,6 +1,7 @@
 from django.urls import path
 from . import views
 from django.contrib.auth import views as auth_views
+from .forms import SetPassword
 
 
 app_name = "accounts"
@@ -18,6 +19,6 @@ urlpatterns = [
     path("edit/<str:pk>/", views.UpdateView.as_view(), name="edit"),
     path('password_reset_form/', auth_views.PasswordResetView.as_view(template_name='registration/password_reset.html', from_email='djangomysnsmail@gmail.com'), name='password_reset_form'),
     path('password_reset/done/', auth_views.PasswordResetDoneView.as_view(template_name='registration/password_reset_mail_done.html'), name='password_reset_done'),
-    path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(template_name='registration/password_reset_confirmation.html'), name='password_reset_confirm'),
+    path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(template_name='registration/password_reset_confirmation.html', form_class=SetPassword), name='password_reset_confirm'),
     path('reset/done/', auth_views.PasswordResetCompleteView.as_view(template_name='registration/password_reset_finish.html'), name='password_reset_complete'),
 ]
