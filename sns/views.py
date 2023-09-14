@@ -16,11 +16,20 @@ import json
 
 
 class IndexView(generic.ListView):
-    queryset = Post.objects.filter(mode=0)
+    count = Post.objects.filter(mode=0).count()
+    show_num = 100
+    if count-show_num < 0:
+        queryset = Post.objects.filter(mode=0)
+    else :
+        queryset = Post.objects.filter(mode=0)[count-show_num:]
 
     def get_context_data(self, *args, **kwargs: Any):
         context = super().get_context_data(*args, **kwargs)
-        post = Post.objects.filter(mode=0)
+        if self.count - self.show_num < 0:
+            post = Post.objects.filter(mode=0)
+        else:
+            post = Post.objects.filter(mode=0)[self.count-self.show_num:]
+        
         lib.list_comment(context, post)
         
         if self.request.user.is_anonymous:

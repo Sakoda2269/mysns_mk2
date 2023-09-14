@@ -3,7 +3,7 @@ from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.forms import UserCreationForm
 from django.forms import ModelForm
 from django.contrib.auth import get_user_model
-from django.contrib.auth.forms import SetPasswordForm
+from django.contrib.auth.forms import SetPasswordForm, PasswordChangeForm
 import random, string
 
 def randomname(n) -> str:
@@ -45,6 +45,13 @@ class UserChangeForm(ModelForm):
 
 
 class SetPassword(SetPasswordForm):
+    def __init__(self, user: AbstractBaseUser | None, *args: Any, **kwargs: Any) -> None:
+        super().__init__(user, *args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs["class"] = "form-control"
+
+
+class ChangePassword(PasswordChangeForm):
     def __init__(self, user: AbstractBaseUser | None, *args: Any, **kwargs: Any) -> None:
         super().__init__(user, *args, **kwargs)
         for field in self.fields.values():

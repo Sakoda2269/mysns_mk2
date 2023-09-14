@@ -102,6 +102,7 @@
                     {% else %}
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                             <a class="dropdown-item block" href="{% url 'accounts:edit' userDetail.id %}" style="color:#444">ユーザー情報の変更</a>
+                            <a class="dropdown-item block" href="{% url 'accounts:password_change_form' %}" style="color:#444">パスワードの変更</a>
                         </div>
                     {% endif %}
                 </div>
