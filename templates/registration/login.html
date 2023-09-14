@@ -15,11 +15,12 @@
             <p class='error-msg'>Please login to see this page.</p>
         {% endif %}
     {% endif %}
-
     <form action='{% url "login" %}' method='post'>
         {% csrf_token %}
         <input type='hidden' name='next' value='{{ next }}'/>
         {{ form.as_p }}
+        <a href="{% url 'accounts:password_reset_form' %}">パスワードを忘れた</a>
+        <br>
         <button type='submit'>Login</button>
     </form>
 </section>

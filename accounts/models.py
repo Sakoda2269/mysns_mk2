@@ -90,6 +90,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(_("username"), max_length=50)
     usertag = models.CharField(_("usertag"), max_length=16, unique=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
 
     objects = CustomUserManager()
 
