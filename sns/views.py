@@ -17,7 +17,7 @@ import json
 
 class IndexView(generic.ListView):
     count = Post.objects.filter(mode=0).count()
-    show_num = 100
+    show_num = 5
     if count-show_num < 0:
         queryset = Post.objects.filter(mode=0)
     else :
@@ -29,7 +29,8 @@ class IndexView(generic.ListView):
             post = Post.objects.filter(mode=0)
         else:
             post = Post.objects.filter(mode=0)[self.count-self.show_num:]
-        
+        context["order"] = 1
+        context["last"] = 0
         lib.list_comment(context, post)
         if self.request.user.is_anonymous:
             return context
@@ -42,7 +43,6 @@ class IndexView(generic.ListView):
             follows.add(f.followed)
         follows.add(self.request.user)
         context["following"] = follows
-        
         lib.user_info(context, self.request.user)
         return context  
     
@@ -337,3 +337,27 @@ def ajax_show_hash(request, name):
     #ログインしているときの追加情報
     lib.user_info(context, request.user)
     return render(request, "sns/hash_posts.html", context)
+
+
+def ajax_additional_post(request, id):
+    show_num = 5
+    count = Post.objects.all().count()
+    order = int(id) + 1
+    context = {}
+    context["order"] = order
+    context["last"] = 0
+    if count < show_num * order:
+        post = Post.objects.filter(mode=0)[:count - show_num * (order-1) + 1]
+        context["last"] = 1
+    else:
+        post = Post.objects.filter(mode=0)[count - show_num * order + 1 : count - show_num * (order-1) + 1]
+    context["object_list"] = post
+    lib.list_comment(context, post)
+    if request.user.is_anonymous:
+        return render(request, "sns/additional_post_list.html", context)
+    
+    #ログインしているときの追加情報
+    lib.user_info(context, request.user)
+    return render(request, "sns/additional_post_list.html", context)
+
+    
