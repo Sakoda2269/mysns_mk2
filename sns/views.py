@@ -31,7 +31,6 @@ class IndexView(generic.ListView):
             post = Post.objects.filter(mode=0)[self.count-self.show_num:]
         
         lib.list_comment(context, post)
-        
         if self.request.user.is_anonymous:
             return context
         
@@ -90,7 +89,6 @@ class CreateView(generic.edit.CreateView):
     model = Post
     form_class = CreatePost
     success_url = reverse_lazy("sns:index")
-
 
     def form_valid(self, form: BaseModelForm) -> HttpResponse:
         form.instance.author = self.request.user
