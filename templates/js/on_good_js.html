@@ -55,7 +55,7 @@ function openComment(id){
 
 function ajax_comment(post_id){
         const url = '{% url "sns:ajaxcomment" %}';
-        const data = new URLSearchParams();
+        let data = new URLSearchParams();
         data.append('post_id', String(post_id));
         data.append('comment', document.getElementById("comment_in_" + String(post_id)).value);
         fetch(url, {

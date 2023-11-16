@@ -42,7 +42,7 @@ button:hover{
 
     window.addEventListener('DOMContentLoaded', function(){
         let serch = document.getElementById("serch_box");
-        const data = JSON.parse('{{ data|safe }}')
+        let data = JSON.parse('{{ data|safe }}')
         tags = data.data;
         var tag_split = [];
         for(t in tags){
