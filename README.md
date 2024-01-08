@@ -1,7 +1,7 @@
 # mysns_mk2
-SNSを作りたい
+Djangoの使い方の勉強の一環でSNSを作ってみました。
 <br>
 2023/08/14~
 <br>
-Django使用
+Django==3.0.2使用
 
