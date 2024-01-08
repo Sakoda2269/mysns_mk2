@@ -58,7 +58,7 @@ def mention(post):
                 j += 1
             tag = detail[i+1:j]
             res += detail[last_i:i]
-            res += "<a href='{}'>".format(reverse("sns:serch_tag", kwargs=dict(tag=tag)))
+            res += "<a href='{}'>".format(reverse("sns:search_tag", kwargs=dict(tag=tag)))
             res += "#" + tag
             res += "</a>"
             i = j - 1

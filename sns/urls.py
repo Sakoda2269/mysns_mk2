@@ -19,8 +19,8 @@ urlpatterns = [
     path("ajax_comment_list/<str:id>", views.ajax_comment_list, name="ajax_comment_list"),
     path("notice/<str:id>/", views.notification, name="notice"),
     path("check_notification/", views.check_notification, name="check_notification"),
-    path("serch/", views.serch, name="serch"),
-    path("serch_tag/<str:tag>/", views.serch, name="serch_tag"),
+    path("search/", views.search, name="search"),
+    path("search_tag/<str:tag>/", views.search, name="search_tag"),
     path("ajax_show_hash/<str:name>/", views.ajax_show_hash, name="ajax_show_hash"),
     path("ajax_additional_post/<int:id>", views.ajax_additional_post, name="ajax_additional_post"),
 ]

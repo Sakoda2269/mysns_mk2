@@ -10,13 +10,12 @@ button:hover{
 
 {% block content %}
     <div class="row form-group">
-        <label for="serch_box" class="col-sm-1" style="padding-left:2rem; padding-top:5px">
+        <label for="search_box" class="col-sm-1" style="padding-left:2rem; padding-top:5px">
             <i class="fa-solid fa-magnifying-glass"></i>
         </label>
         <span class="col-sm-11">
-            <input type="text" id="serch_box" class="form-control" placeholder="ハッシュタグを検索">
-            <div class="collapse" id="serch_res">
-                <h1>BOO</h1>
+            <input type="text" id="search_box" class="form-control" placeholder="ハッシュタグを検索">
+            <div class="collapse" id="search_res">
             </div>
         </span>
     </div>
@@ -29,8 +28,8 @@ button:hover{
 <script type="text/javascript">
 
     function hash_list(tag){
-        $("#serch_res").collapse("hide");
-        document.getElementById("serch_box").value=tag;
+        $("#search_res").collapse("hide");
+        document.getElementById("search_box").value=tag;
         let tmp = "";
         for(let i = 1; i < tag.length; i++){
             tmp += tag.charAt(i);
@@ -41,38 +40,38 @@ button:hover{
     }
 
     window.addEventListener('DOMContentLoaded', function(){
-        let serch = document.getElementById("serch_box");
+        let search = document.getElementById("search_box");
         let data = JSON.parse('{{ data|safe }}')
         tags = data.data;
         var tag_split = [];
         for(t in tags){
             tag_split.push(tags[t].split(''));
         }
-        serch.addEventListener("input", function(){
-            serch_in = serch.value.split('');
+        search.addEventListener("input", function(){
+            search_in = search.value.split('');
             let ans = [];
             for(ts of tag_split){
                 let now = 0;
                 let tag_now = 0;
                 while(true){
-                    if(serch_in[now] == "#" && now == 0){
+                    if(search_in[now] == "#" && now == 0){
                         now += 1;
                         continue;
                     }
-                    if (serch_in[0] == "#"){
-                        if(serch_in.length-1 > ts.length){
+                    if (search_in[0] == "#"){
+                        if(search_in.length-1 > ts.length){
                             break;
                         }
                     }
-                    else if(serch_in.length > ts.length){
+                    else if(search_in.length > ts.length){
                         break;
                     }
-                    if(serch_in[now] != ts[tag_now]){
+                    if(search_in[now] != ts[tag_now]){
                         break;
                     }
                     now = now + 1;
                     tag_now = tag_now + 1;
-                    if(serch_in.length <= now || ts.length <= tag_now){
+                    if(search_in.length <= now || ts.length <= tag_now){
                         ans.push(ts);
                         break;
                     }
@@ -88,11 +87,11 @@ button:hover{
                 inhtml += "</button>";
                 inhtml += "<br>";
             }
-            if(serch_in.length==0){
-                $("#serch_res").collapse("hide");
+            if(search_in.length==0){
+                $("#search_res").collapse("hide");
             }else{
-                $("#serch_res").collapse("show");
-                document.getElementById("serch_res").innerHTML = inhtml;
+                $("#search_res").collapse("show");
+                document.getElementById("search_res").innerHTML = inhtml;
             }
         });
         
@@ -104,7 +103,7 @@ button:hover{
 {% block extra_ajax %}
     $(document).ready(function(){
         if("{{ tag }}" != "#"){
-            $("#serch_box").val("{{ tag }}");
+            $("#search_box").val("{{ tag }}");
             hash_list("{{ tag }}");
         }
     });
